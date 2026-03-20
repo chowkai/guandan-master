@@ -58,6 +58,9 @@ class GameState {
     }
 }
 
+// 报牌提醒标记（每个玩家是否已提醒）
+const hasReminded = {};
+
 // ========================================
 // 游戏主类
 // ========================================
@@ -91,20 +94,33 @@ class GuandanGame {
             window.animationManager.setEnabled(this.settings.animationEnabled);
         }
         
-        this.showGameMessage('欢迎加入掼蛋大师！');
+        // 显示开始画面
+        this.showStartScreen();
     }
     
     /**
      * 绑定事件
      */
     bindEvents() {
+        // 开始画面按钮
+        document.getElementById('btn-start-game').addEventListener('click', () => {
+            this.hideStartScreen();
+            this.startNewGame();
+        });
+        document.getElementById('btn-start-settings').addEventListener('click', () => this.showSettings());
+        document.getElementById('btn-start-help').addEventListener('click', () => this.showHelp());
+        
         // 按钮事件
         document.getElementById('btn-new-game').addEventListener('click', () => this.startNewGame());
         document.getElementById('btn-quit').addEventListener('click', () => this.quitGame());
         document.getElementById('btn-play').addEventListener('click', () => this.playSelectedCards());
         document.getElementById('btn-pass').addEventListener('click', () => this.passTurn());
-        document.getElementById('btn-sort').addEventListener('click', () => this.sortHand());
         document.getElementById('btn-hint').addEventListener('click', () => this.showHint());
+        
+        // 多种排序方式
+        document.getElementById('btn-sort-suit').addEventListener('click', () => this.sortBySuit());
+        document.getElementById('btn-sort-rank').addEventListener('click', () => this.sortByRank());
+        document.getElementById('btn-sort-smart').addEventListener('click', () => this.sortSmart());
         
         // 设置和帮助
         document.getElementById('btn-settings').addEventListener('click', () => this.showSettings());
@@ -199,14 +215,21 @@ class GuandanGame {
         this.state = new GameState();
         this.state.level = 2;
         
+        // 重置报牌提醒
+        this.hasReminded = {
+            [PLAYER_POSITIONS.TOP]: false,
+            [PLAYER_POSITIONS.LEFT]: false,
+            [PLAYER_POSITIONS.RIGHT]: false
+        };
+        
         // 创建牌堆
         this.createDeck();
         
         // 洗牌
         this.shuffleDeck();
         
-        // 发牌
-        this.dealCards();
+        // 发牌（带动画）
+        this.dealCardsWithAnimation();
         
         // 整理手牌
         this.sortHand();
@@ -302,13 +325,92 @@ class GuandanGame {
     }
     
     /**
-     * 整理手牌
+     * 发牌带动画
+     */
+    dealCardsWithAnimation() {
+        this.state.players = {
+            [PLAYER_POSITIONS.TOP]: [],
+            [PLAYER_POSITIONS.LEFT]: [],
+            [PLAYER_POSITIONS.RIGHT]: [],
+            [PLAYER_POSITIONS.BOTTOM]: []
+        };
+        
+        const positions = Object.values(PLAYER_POSITIONS);
+        let cardIndex = 0;
+        const handContainer = document.getElementById('my-hand');
+        handContainer.innerHTML = '';
+        
+        // 轮流发牌，带动画
+        const dealOneCard = () => {
+            if (cardIndex >= this.state.deck.length) {
+                // 发牌完成
+                this.sortHand();
+                return;
+            }
+            
+            const posIndex = cardIndex % 4;
+            const pos = positions[posIndex];
+            
+            this.state.players[pos].push(this.state.deck[cardIndex]);
+            
+            // 如果是玩家，添加卡牌到 UI（带动画）
+            if (pos === PLAYER_POSITIONS.BOTTOM) {
+                const card = this.state.deck[cardIndex];
+                const cardEl = this.createCardElement(card, this.state.players[pos].length - 1);
+                cardEl.classList.add('card-deal-anim');
+                handContainer.appendChild(cardEl);
+            }
+            
+            cardIndex++;
+            
+            // 继续发下一张
+            setTimeout(dealOneCard, 50);
+        };
+        
+        dealOneCard();
+    }
+    
+    /**
+     * 整理手牌（默认按牌值排序）
      */
     sortHand() {
+        this.sortByRank();
+    }
+    
+    /**
+     * 按花色排序
+     */
+    sortBySuit() {
+        const myHand = this.state.players[PLAYER_POSITIONS.BOTTOM];
+        
+        const suitOrder = {
+            [SUITS.CLUBS]: 1,
+            [SUITS.DIAMONDS]: 2,
+            [SUITS.HEARTS]: 3,
+            [SUITS.SPADES]: 4,
+            [SUITS.JOKER]: 5
+        };
+        
+        myHand.sort((a, b) => {
+            // 先按花色排序
+            const suitDiff = suitOrder[a.suit] - suitOrder[b.suit];
+            if (suitDiff !== 0) return suitDiff;
+            
+            // 同花色按牌值排序
+            return b.rank - a.rank;
+        });
+        
+        this.renderMyHand();
+        this.showGameMessage('按花色排序');
+    }
+    
+    /**
+     * 按牌值排序
+     */
+    sortByRank() {
         const myHand = this.state.players[PLAYER_POSITIONS.BOTTOM];
         
         myHand.sort((a, b) => {
-            // 按牌面值排序
             const valueA = this.getCardValue(a);
             const valueB = this.getCardValue(b);
             
@@ -321,6 +423,44 @@ class GuandanGame {
         });
         
         this.renderMyHand();
+        this.showGameMessage('按牌值排序');
+    }
+    
+    /**
+     * 智能排序（炸弹优先）
+     */
+    sortSmart() {
+        const myHand = this.state.players[PLAYER_POSITIONS.BOTTOM];
+        
+        // 统计每种牌的数量
+        const rankCount = {};
+        myHand.forEach(card => {
+            const key = card.rank;
+            rankCount[key] = (rankCount[key] || 0) + 1;
+        });
+        
+        myHand.sort((a, b) => {
+            const countA = rankCount[a.rank] || 0;
+            const countB = rankCount[b.rank] || 0;
+            
+            // 炸弹（4 张及以上）优先
+            if (countA >= 4 && countB < 4) return -1;
+            if (countB >= 4 && countA < 4) return 1;
+            
+            // 同是炸弹或同不是炸弹，按数量降序
+            if (countA !== countB) return countB - countA;
+            
+            // 数量相同，按牌值降序
+            const valueA = this.getCardValue(a);
+            const valueB = this.getCardValue(b);
+            if (valueA !== valueB) return valueB - valueA;
+            
+            // 牌值相同，按花色排序
+            return a.suit.localeCompare(b.suit);
+        });
+        
+        this.renderMyHand();
+        this.showGameMessage('智能排序（炸弹优先）');
     }
     
     /**
@@ -555,6 +695,9 @@ class GuandanGame {
             this.state.lastHand = null;
             this.state.lastHandPlayer = null;
             this.updateLastHandDisplay(null, '');
+            
+            // 清理一轮出的牌
+            this.clearPlayedCards();
         } else {
             // 正常轮转
             this.state.currentTurn = positions[(currentIndex + 1) % 4];
@@ -628,11 +771,25 @@ class GuandanGame {
     }
     
     /**
-     * 显示其他玩家剩余牌数
+     * 显示其他玩家剩余牌数（≤6 张时提醒一次）
      */
     updateOtherPlayerCardCount(position) {
         const count = this.state.players[position].length;
-        document.getElementById(`${position}-card-count`).textContent = count;
+        const countEl = document.getElementById(`${position}-card-count`);
+        
+        // 只在剩余≤6 张时提醒一次
+        if (count <= 6 && this.hasReminded && !this.hasReminded[position]) {
+            this.hasReminded[position] = true;
+            this.showGameMessage(`${this.getPlayerName(position)} 剩余 ${count} 张牌！`);
+            this.playSound('hint');
+        }
+        
+        // 不常显剩余牌数，只在≤6 张时显示
+        if (count <= 6) {
+            countEl.textContent = count;
+        } else {
+            countEl.textContent = '';
+        }
     }
     
     /**
@@ -640,13 +797,38 @@ class GuandanGame {
      */
     displayPlayedCards(position, cards) {
         const container = document.getElementById(`${position}-played-cards`);
+        // 下方玩家（自己）没有出的牌显示区域，直接返回
+        if (!container) {
+            return;
+        }
         container.innerHTML = '';
         
-        cards.forEach(card => {
+        // 添加最后出牌者标识
+        const indicator = document.createElement('div');
+        indicator.className = 'last-player-indicator';
+        indicator.textContent = this.getPlayerName(position) + ' 出牌';
+        container.style.position = 'relative';
+        container.appendChild(indicator);
+        
+        cards.forEach((card, index) => {
             const cardEl = this.createCardElement(card, 0, false);
             cardEl.style.width = '50px';
             cardEl.style.height = '70px';
+            cardEl.style.animationDelay = (index * 0.1) + 's';
             container.appendChild(cardEl);
+        });
+    }
+    
+    /**
+     * 清理一轮出的牌
+     */
+    clearPlayedCards() {
+        ['top', 'left', 'right'].forEach(pos => {
+            const container = document.getElementById(`${pos}-played-cards`);
+            if (container) {
+                container.innerHTML = '';
+                container.style.position = '';
+            }
         });
     }
     
@@ -687,9 +869,7 @@ class GuandanGame {
         });
         
         // 清空出的牌区域
-        ['top', 'left', 'right'].forEach(pos => {
-            document.getElementById(`${pos}-played-cards`).innerHTML = '';
-        });
+        this.clearPlayedCards();
         
         // 清空状态标记
         document.querySelectorAll('.status-badge').forEach(el => {
@@ -850,6 +1030,22 @@ class GuandanGame {
                 window.soundManager.playClick();
                 break;
         }
+    }
+    
+    /**
+     * 显示开始画面
+     */
+    showStartScreen() {
+        document.getElementById('start-screen').classList.add('show');
+        document.getElementById('game-container').style.display = 'none';
+    }
+    
+    /**
+     * 隐藏开始画面
+     */
+    hideStartScreen() {
+        document.getElementById('start-screen').classList.remove('show');
+        document.getElementById('game-container').style.display = 'flex';
     }
     
     /**

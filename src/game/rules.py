@@ -382,7 +382,7 @@ class RulesEngine:
                     main_rank=ranks[-1],  # 最大牌
                     power=ranks[-1] * 10
                 )
-        elif len(ranks) < 5 and level_count > 0:
+        elif len(ranks) < 5 and level_count > 0 and len(ranks) > 0:
             # 有级牌可以填补空缺
             # 简化：检查最小和最大牌的差值
             if ranks[-1] - ranks[0] <= 4:
@@ -427,7 +427,7 @@ class RulesEngine:
         
         # 有级牌的情况较复杂，简化处理
         # 检查基本连续性
-        if len(ranks) <= pair_count and level_count > 0:
+        if len(ranks) <= pair_count and level_count > 0 and len(ranks) > 0:
             if ranks[-1] - ranks[0] <= pair_count - 1:
                 return HandResult(
                     CardType.CONSECUTIVE_PAIRS,
@@ -569,7 +569,7 @@ class RulesEngine:
                     power=self.BOMB_POWER[CardType.SAME_SUIT_STRAIGHT],
                     extra_info={'suit': normal_suits[0] if normal_suits else Suit.SPADES}
                 )
-        elif len(ranks) < 5 and level_count > 0:
+        elif len(ranks) < 5 and level_count > 0 and len(ranks) > 0:
             if ranks[-1] - ranks[0] <= 4:
                 return HandResult(
                     CardType.SAME_SUIT_STRAIGHT,

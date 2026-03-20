@@ -10,8 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 游戏开始画面 -->
+    <div id="start-screen">
+        <h1 class="start-screen-title">掼蛋大师</h1>
+        <p class="start-screen-subtitle">Guandan Master - 经典扑克游戏</p>
+        <div class="start-screen-buttons">
+            <button id="btn-start-game" class="start-btn btn-primary">🎮 新游戏</button>
+            <button id="btn-start-settings" class="start-btn">⚙️ 设置</button>
+            <button id="btn-start-help" class="start-btn">❓ 游戏规则</button>
+        </div>
+    </div>
+
     <!-- 游戏主容器 -->
-    <div id="game-container">
+    <div id="game-container" style="display: none;">
         <!-- 顶部信息栏 -->
         <header id="game-header">
             <div class="header-left">
@@ -36,7 +47,7 @@
                         <span id="top-status" class="status-badge"></span>
                     </div>
                 </div>
-                <div class="played-cards" id="top-played-cards">
+                <div class="played-cards-area" id="top-played-cards">
                     <!-- 出的牌 -->
                 </div>
             </section>
@@ -51,7 +62,7 @@
                         <span id="left-status" class="status-badge"></span>
                     </div>
                 </div>
-                <div class="played-cards" id="left-played-cards">
+                <div class="played-cards-area" id="left-played-cards">
                     <!-- 出的牌 -->
                 </div>
             </section>
@@ -81,7 +92,7 @@
                         <span id="right-status" class="status-badge"></span>
                     </div>
                 </div>
-                <div class="played-cards" id="right-played-cards">
+                <div class="played-cards-area" id="right-played-cards">
                     <!-- 出的牌 -->
                 </div>
             </section>
@@ -97,10 +108,13 @@
                     <div class="player-info-inline">
                         <div class="player-avatar">👤</div>
                         <div class="player-name">我</div>
-                        <div class="card-count">剩余：<span id="my-card-count">27</span>张</div>
                     </div>
                     <div class="action-buttons">
-                        <button id="btn-sort" class="action-btn">整理</button>
+                        <div class="sort-buttons" style="display: flex; gap: 5px; margin-right: 10px;">
+                            <button id="btn-sort-suit" class="action-btn btn-secondary" title="按花色排序">🌸</button>
+                            <button id="btn-sort-rank" class="action-btn btn-secondary" title="按牌值排序">🔢</button>
+                            <button id="btn-sort-smart" class="action-btn btn-hint" title="智能排序（炸弹优先）">💡</button>
+                        </div>
                         <button id="btn-play" class="action-btn btn-primary">出牌</button>
                         <button id="btn-pass" class="action-btn btn-secondary">不要</button>
                         <button id="btn-hint" class="action-btn btn-hint">提示</button>
