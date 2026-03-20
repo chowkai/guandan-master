@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- 掼蛋大师 - 炸弹特效动画序列 - 典雅中国风 -->
+  <!-- 设计师：画虾 | 日期：2026-03-20 -->
+  <!-- 共 6 帧，建议动画时长 800ms -->
+  
+  <defs>
+    <!-- 爆炸渐变 -->
+    <radialGradient id="explosionGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C41E3A;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- 闪光效果 -->
+    <filter id="flashGlow">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 震动效果 -->
+    <filter id="shake">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#1E3A25"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="30" font-family="Noto Serif SC, serif" font-size="18" fill="#D4AF37" text-anchor="middle">炸弹特效动画序列 (6 帧)</text>
+  
+  <!-- ========== 帧 1: 炸弹出现 ========== -->
+  <g transform="translate(80, 80)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 1 - 炸弹出现</text>
+    
+    <!-- 炸弹牌 -->
+    <g transform="translate(60, 70)">
+      <rect x="-30" y="-40" width="60" height="80" rx="6" fill="#F5F0E6" stroke="#E74C3C" stroke-width="3"/>
+      <text x="0" y="-10" font-family="Noto Serif SC, serif" font-size="24" fill="#E74C3C" text-anchor="middle" font-weight="bold">炸弹</text>
+      <text x="0" y="20" font-size="32" text-anchor="middle" fill="#E74C3C">💣</text>
+    </g>
+  </g>
+  
+  <!-- ========== 帧 2: 开始发光 ========== -->
+  <g transform="translate(240, 80)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 2 - 开始发光</text>
+    
+    <!-- 光晕 -->
+    <circle cx="60" cy="70" r="50" fill="url(#explosionGrad)" opacity="0.5" filter="url(#flashGlow)"/>
+    
+    <!-- 炸弹牌 -->
+    <g transform="translate(60, 70)">
+      <rect x="-30" y="-40" width="60" height="80" rx="6" fill="#F5F0E6" stroke="#E74C3C" stroke-width="3"/>
+      <text x="0" y="-10" font-family="Noto Serif SC, serif" font-size="24" fill="#E74C3C" text-anchor="middle" font-weight="bold">炸弹</text>
+      <text x="0" y="20" font-size="32" text-anchor="middle" fill="#E74C3C">💣</text>
+    </g>
+  </g>
+  
+  <!-- ========== 帧 3: 爆炸开始 ========== -->
+  <g transform="translate(400, 80)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 3 - 爆炸开始</text>
+    
+    <!-- 爆炸光效 -->
+    <circle cx="60" cy="70" r="70" fill="url(#explosionGrad)" opacity="0.8" filter="url(#flashGlow)"/>
+    
+    <!-- 爆炸碎片 -->
+    <circle cx="20" cy="40" r="3" fill="#FFD700" opacity="0.8"/>
+    <circle cx="100" cy="50" r="4" fill="#FF6B6B" opacity="0.8"/>
+    <circle cx="40" cy="100" r="3" fill="#FFD700" opacity="0.8"/>
+    <circle cx="90" cy="90" r="4" fill="#FF6B6B" opacity="0.8"/>
+  </g>
+  
+  <!-- ========== 帧 4: 爆炸高潮 ========== -->
+  <g transform="translate(560, 80)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 4 - 爆炸高潮</text>
+    
+    <!-- 大爆炸 -->
+    <circle cx="60" cy="70" r="90" fill="url(#explosionGrad)" opacity="1" filter="url(#flashGlow)"/>
+    
+    <!-- 闪光 -->
+    <circle cx="60" cy="70" r="60" fill="#FFFFFF" opacity="0.6"/>
+    
+    <!-- 爆炸碎片 (更多) -->
+    <g fill="#FFD700">
+      <circle cx="10" cy="50" r="3"/>
+      <circle cx="110" cy="60" r="4"/>
+      <circle cx="30" cy="20" r="3"/>
+      <circle cx="80" cy="110" r="4"/>
+      <circle cx="20" cy="90" r="3"/>
+      <circle cx="100" cy="30" r="4"/>
+    </g>
+    
+    <!-- 震动效果文字 -->
+    <text x="60" cy="70" font-family="Noto Serif SC, serif" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="bold" opacity="0.9">BOOM!</text>
+  </g>
+  
+  <!-- ========== 帧 5: 爆炸消散 ========== -->
+  <g transform="translate(80, 260)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 5 - 爆炸消散</text>
+    
+    <!-- 消散的光效 -->
+    <circle cx="60" cy="70" r="100" fill="url(#explosionGrad)" opacity="0.4"/>
+    
+    <!-- 剩余碎片 -->
+    <g fill="#FFD700" opacity="0.6">
+      <circle cx="0" cy="60" r="3"/>
+      <circle cx="120" cy="70" r="3"/>
+      <circle cx="50" cy="10" r="3"/>
+      <circle cx="70" cy="120" r="3"/>
+    </g>
+    
+    <!-- 烟雾效果 -->
+    <circle cx="40" cy="60" r="15" fill="#999999" opacity="0.3"/>
+    <circle cx="80" cy="70" r="20" fill="#999999" opacity="0.3"/>
+    <circle cx="60" cy="90" r="18" fill="#999999" opacity="0.3"/>
+  </g>
+  
+  <!-- ========== 帧 6: 特效结束 ========== -->
+  <g transform="translate(240, 260)">
+    <rect width="120" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="60" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 6 - 特效结束</text>
+    
+    <!-- 剩余微光 -->
+    <circle cx="60" cy="70" r="40" fill="#FFD700" opacity="0.1"/>
+    
+    <!-- 少量烟雾 -->
+    <circle cx="50" cy="65" r="10" fill="#999999" opacity="0.2"/>
+    <circle cx="70" cy="75" r="12" fill="#999999" opacity="0.2"/>
+  </g>
+  
+  <!-- 同花顺特效预览 -->
+  <g transform="translate(400, 260)">
+    <rect width="320" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="160" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">同花顺特效 (简化版)</text>
+    
+    <!-- 彩虹渐变背景 -->
+    <defs>
+      <linearGradient id="straightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+        <stop offset="25%" style="stop-color:#FFB703;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#2EC4B6;stop-opacity:1" />
+        <stop offset="75%" style="stop-color:#6C5CE7;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- 彩虹光效 -->
+    <rect x="40" y="40" width="240" height="60" rx="30" fill="url(#straightGrad)" opacity="0.6" filter="url(#flashGlow)"/>
+    
+    <!-- 文字 -->
+    <text x="160" y="75" font-family="Noto Serif SC, serif" font-size="18" fill="#FFFFFF" text-anchor="middle" font-weight="bold">同花顺!</text>
+    
+    <!-- 闪烁星星 -->
+    <text x="60" y="50" font-size="16" fill="#FFD700">✨</text>
+    <text x="260" y="55" font-size="16" fill="#FFD700">✨</text>
+    <text x="80" y="90" font-size="16" fill="#FFD700">✨</text>
+    <text x="240" y="95" font-size="16" fill="#FFD700">✨</text>
+  </g>
+  
+  <!-- 动画说明 -->
+  <g transform="translate(80, 430)">
+    <text x="0" y="0" font-family="Noto Serif SC, serif" font-size="14" fill="#D4AF37" font-weight="bold">动画参数:</text>
+    <text x="20" y="25" font-family="Arial" font-size="12" fill="#F5F0E6">• 总帧数：6 帧</text>
+    <text x="20" y="45" font-family="Arial" font-size="12" fill="#F5F0E6">• 动画时长：800ms (每帧 ~133ms)</text>
+    <text x="20" y="65" font-family="Arial" font-size="12" fill="#F5F0E6">• 爆炸半径：50px → 100px → 消散</text>
+    <text x="20" y="85" font-family="Arial" font-size="12" fill="#F5F0E6">• 屏幕震动：强度 5px, 持续 300ms</text>
+    <text x="20" y="105" font-family="Arial" font-size="12" fill="#F5F0E6">• 音效：爆炸声 (可选)</text>
+  </g>
+  
+  <!-- CSS 实现示例 -->
+  <g transform="translate(400, 430)">
+    <text x="0" y="0" font-family="Noto Serif SC, serif" font-size="14" fill="#D4AF37" font-weight="bold">CSS 实现:</text>
+    <text x="20" y="25" font-family="monospace" font-size="9" fill="#F5F0E6">@keyframes bombExplode {</text>
+    <text x="30" y="38" font-family="monospace" font-size="9" fill="#F5F0E6">0% { transform: scale(0.5); opacity: 0.5; }</text>
+    <text x="30" y="51" font-family="monospace" font-size="9" fill="#F5F0E6">50% { transform: scale(1.5); opacity: 1; }</text>
+    <text x="30" y="64" font-family="monospace" font-size="9" fill="#F5F0E6">100% { transform: scale(2); opacity: 0; }</text>
+    <text x="20" y="77" font-family="monospace" font-size="9" fill="#F5F0E6">}</text>
+    <text x="20" y="95" font-family="monospace" font-size="9" fill="#F5F0E6">.bomb-effect {</text>
+    <text x="30" y="108" font-family="monospace" font-size="9" fill="#F5F0E6">animation: bombExplode 0.8s ease-out;</text>
+    <text x="20" y="121" font-family="monospace" font-size="9" fill="#F5F0E6">}</text>
+  </g>
+  
+  <!-- 装饰边框 -->
+  <rect x="10" y="10" width="780" height="580" rx="10" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="10,5"/>
+</svg>

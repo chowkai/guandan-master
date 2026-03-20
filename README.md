@@ -1,47 +1,35 @@
-# 🃏 掼蛋大师 (Guandan Master)
+# 掼蛋大师 (Guandan Master)
 
-> 精美的单机版掼蛋扑克游戏
+🃏 一款精美的掼蛋扑克牌游戏
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow.svg)
+## 📊 项目状态
 
----
-
-## 🎮 游戏简介
-
-**掼蛋**是一种流行的中国扑克牌游戏，结合了升级和跑得快玩法。本游戏提供：
-
-- ✅ 完整掼蛋规则
-- ✅ 3 个难度等级的智能 AI
-- ✅ 精美的 HTML5 游戏界面
-- ✅ 单机离线可玩
-- ✅ 多端适配（PC/手机/平板）
+**Week 1: 核心游戏逻辑** ✅ 已完成  
+**Week 2: AI 开发** ⏳ 待开始  
+**Week 3: UI 设计** ⏳ 待开始  
+**Week 4: 前端开发** ⏳ 待开始  
+**Week 5: 优化测试** ⏳ 待开始
 
 ---
 
 ## 🚀 快速开始
 
-### 环境要求
-
-- Python 3.10+
-- 现代浏览器（Chrome/Firefox/Safari）
-
-### 安装运行
+### 运行命令行版
 
 ```bash
-# 克隆项目
 cd /home/zhoukai/openclaw/workspace/projects/guandan
 
-# 安装依赖
-pip install -r requirements.txt
+# 开始游戏（默认打 2）
+python3 src/cli.py
 
-# 启动游戏（命令行版）
-python src/game/main.py
+# 指定级数和位置
+python3 src/cli.py --level 3 --position 0
+```
 
-# 启动 Web 版
-python src/server/app.py
-# 访问 http://localhost:8000
+### 运行测试
+
+```bash
+python3 tests/test_rules.py
 ```
 
 ---
@@ -50,80 +38,89 @@ python src/server/app.py
 
 ```
 guandan/
-├── docs/              # 项目文档
-├── src/               # 源代码
-│   ├── game/          # 游戏核心逻辑
-│   ├── ai/            # AI 算法
-│   ├── server/        # 后端服务
-│   └── client/        # 前端界面
-├── assets/            # 素材资源
-├── tests/             # 测试用例
+├── src/
+│   ├── game/
+│   │   ├── cards.py      # 卡牌类（花色、点数、大小比较）
+│   │   ├── deck.py       # 牌堆类（洗牌、发牌）
+│   │   ├── player.py     # 玩家类（手牌、出牌）
+│   │   ├── rules.py      # 规则引擎（牌型判断、大小比较）
+│   │   └── game.py       # 游戏主循环
+│   └── cli.py            # 命令行界面
+├── tests/
+│   └── test_rules.py     # 规则单元测试
+├── docs/
+│   ├── requirements.md   # 需求说明
+│   └── project-plan.md   # 项目计划
 └── README.md
 ```
 
 ---
 
-## 🎯 功能特性
+## 🎮 游戏规则
 
-### 核心功能
+### 牌型分类
 
-- 🃏 完整牌型判断（单张、对子、顺子、炸弹、核弹等）
-- 🤖 智能 AI 对手（简单/中等/困难）
-- 🎨 精美卡牌素材
-- 📱 响应式设计
+#### 普通牌型
+- **单张**: 1 张牌
+- **对子**: 2 张相同牌
+- **三张**: 3 张相同牌
+- **三带二**: 3 张相同 + 1 对
+- **顺子**: 5 张连续单牌
+- **连对**: 3 对及以上连续对子
+- **钢板**: 2 个连续三张
 
-### 游戏规则
+#### 炸弹类（可炸普通牌型）
+- **炸弹**: 4 张或 5 张相同牌
+- **核弹**: 6 张及以上相同牌
+- **同花顺**: 5 张连续同花色牌
+- **四大天王**: 4 张王（最大）
 
-- 4 人游戏，两两组队
-- 2 副牌（108 张），每人 27 张
-- 级牌可当百搭（逢人配）
-- 炸弹/核弹/同花顺特殊规则
+### 牌型大小
 
----
+```
+四大天王 > 10 张核弹 > 9 张 > 8 张 > 7 张 > 6 张核弹 > 同花顺 > 5 张炸弹 > 4 张炸弹
 
-## 📅 开发计划
+单张大小：大王 > 小王 > 级牌 > A > K > Q > J > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2
+```
 
-| 阶段 | 内容 | 状态 |
-|------|------|------|
-| Phase 1 | 核心游戏逻辑 | 🔴 未开始 |
-| Phase 2 | AI 算法开发 | ⚪ 等待中 |
-| Phase 3 | UI 素材设计 | ⚪ 等待中 |
-| Phase 4 | HTML5 前端 | ⚪ 等待中 |
-| Phase 5 | 优化测试 | ⚪ 等待中 |
+### 特殊规则
+
+- **级牌（逢人配）**: 当前打几，几就是级牌，可当任意牌使用
+- **一局结束**: 前 3 家出完手牌（第 3 家出完游戏结束）
+- **打 A 规则**: 升级到 A 时，必须己方有人头游且己方无人末游
 
 ---
 
 ## 🛠️ 技术栈
 
-- **后端**: Python 3.10+
-- **前端**: HTML5 + CSS3 + JavaScript
-- **AI**: 规则引擎 + 策略算法
-- **素材**: SVG/PNG
+- **Python**: 3.10+
+- **游戏逻辑**: 纯 Python 实现
+- **测试框架**: unittest
 
 ---
 
-## 📝 文档
+## ✅ Week 1 完成清单
 
-- [需求说明书](docs/requirements.md)
-- [项目计划](docs/project-plan.md)
-- [技术规格](docs/tech-spec.md)
+- [x] 卡牌类设计 (`cards.py`) - 4h
+- [x] 牌堆类设计 (`deck.py`) - 2h
+- [x] 玩家类设计 (`player.py`) - 3h
+- [x] 牌型判断算法 (`rules.py`) - 8h
+- [x] 游戏主循环 (`game.py`) - 4h
+- [x] 命令行界面 (`cli.py`) - 3h
+- [x] 单元测试 (`test_rules.py`) - 4h
+- [x] 所有测试通过（26/26）
+
+**总计**: 28 小时工作量  
+**状态**: ✅ 命令行版可玩
 
 ---
 
-## 👥 项目团队
+## 📞 联系
 
 - **项目经理**: 🦐 虾总管
 - **主程开发**: 🧑‍💻 代码虾
-- **UI 设计**: 🎨 画虾
 
 ---
 
-## 📄 许可证
-
-MIT License
-
----
-
-**状态**: 开发中  
-**版本**: v0.1.0  
+**版本**: v1.0  
 **最后更新**: 2026-03-20

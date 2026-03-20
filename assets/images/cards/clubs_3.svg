@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="280" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- 掼蛋大师 - 草花3 - 典雅中国风 -->
+  
+  <!-- 卡牌背景 -->
+  <rect x="5" y="5" width="190" height="270" rx="15" fill="#F5F0E6" stroke="#D4AF37" stroke-width="2"/>
+  
+  <!-- 传统纹样边框 (简化云纹) -->
+  <rect x="12" y="12" width="176" height="256" rx="10" fill="none" stroke="#C41E3A" stroke-width="1" stroke-dasharray="5,3"/>
+  
+  <!-- 左上角点数 -->
+  <text x="25" y="45" font-family="Noto Serif SC, serif" font-size="28" fill="#2E8B57" font-weight="bold">3</text>
+  <text x="25" y="70" font-family="Arial" font-size="20" fill="#2E8B57">♣</text>
+  
+  <!-- 右上角点数 (倒置) -->
+  <text x="175" y="235" font-family="Noto Serif SC, serif" font-size="28" fill="#2E8B57" font-weight="bold" transform="rotate(180 175 235)">3</text>
+  <text x="175" y="210" font-family="Arial" font-size="20" fill="#2E8B57" transform="rotate(180 175 210)">♣</text>
+  
+  <!-- 中央图案 -->
+  <text x="100" y="95" font-family="Arial" font-size="55" fill="#2E8B57" text-anchor="middle">♣</text>
+  <text x="70" y="165" font-family="Arial" font-size="55" fill="#2E8B57" text-anchor="middle">♣</text>
+  <text x="130" y="165" font-family="Arial" font-size="55" fill="#2E8B57" text-anchor="middle">♣</text>
+  
+  <!-- 装饰性角花 (四角) -->
+  <path d="M 15 15 L 25 15 L 25 20 L 20 20 L 20 25 L 15 25 Z" fill="#D4AF37" opacity="0.6"/>
+  <path d="M 185 15 L 175 15 L 175 20 L 180 20 L 180 25 L 185 25 Z" fill="#D4AF37" opacity="0.6"/>
+  <path d="M 15 265 L 25 265 L 25 260 L 20 260 L 20 255 L 15 255 Z" fill="#D4AF37" opacity="0.6"/>
+  <path d="M 185 265 L 175 265 L 175 260 L 180 260 L 180 255 L 185 255 Z" fill="#D4AF37" opacity="0.6"/>
+</svg>

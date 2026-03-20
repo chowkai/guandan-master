@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- 掼蛋大师 - 发牌动画序列 - 典雅中国风 -->
+  <!-- 设计师：画虾 | 日期：2026-03-20 -->
+  <!-- 共 8 帧，建议动画时长 600ms -->
+  
+  <defs>
+    <!-- 卡牌渐变 -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F0E6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 金色光晕 -->
+    <filter id="goldGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#1E3A25"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="30" font-family="Noto Serif SC, serif" font-size="18" fill="#D4AF37" text-anchor="middle">发牌动画序列 (8 帧)</text>
+  
+  <!-- ========== 帧 1: 牌堆准备 ========== -->
+  <g transform="translate(50, 50)">
+    <rect width="175" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="87" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 1 - 牌堆准备</text>
+    
+    <!-- 牌堆 -->
+    <g transform="translate(87, 70)">
+      <rect x="-30" y="-40" width="60" height="80" rx="6" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2"/>
+      <rect x="-28" y="-38" width="60" height="80" rx="6" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.5"/>
+      <rect x="-26" y="-36" width="60" height="80" rx="6" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.3"/>
+      <text x="0" y="5" font-size="24" text-anchor="middle" fill="#D4AF37">🂠</text>
+    </g>
+  </g>
+  
+  <!-- ========== 帧 2: 第一张牌飞出 ========== -->
+  <g transform="translate(275, 50)">
+    <rect width="175" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="87" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 2 - 牌飞出</text>
+    
+    <!-- 牌堆 -->
+    <g transform="translate(87, 70)">
+      <rect x="-30" y="-40" width="60" height="80" rx="6" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2"/>
+    </g>
+    
+    <!-- 飞出的牌 -->
+    <g transform="translate(120, 40) rotate(-15)">
+      <rect x="-25" y="-35" width="50" height="70" rx="5" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2" filter="url(#goldGlow)"/>
+      <text x="0" y="5" font-size="18" text-anchor="middle" fill="#C41E3A">♥</text>
+    </g>
+    
+    <!-- 运动轨迹 -->
+    <path d="M 60 70 Q 90 55 120 40" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  </g>
+  
+  <!-- ========== 帧 3: 牌飞向玩家 ========== -->
+  <g transform="translate(500, 50)">
+    <rect width="175" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="87" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 3 - 飞向玩家</text>
+    
+    <!-- 飞出的牌 (更远) -->
+    <g transform="translate(100, 20) rotate(-30)">
+      <rect x="-25" y="-35" width="50" height="70" rx="5" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2" filter="url(#goldGlow)"/>
+      <text x="0" y="5" font-size="18" text-anchor="middle" fill="#C41E3A">♥</text>
+    </g>
+    
+    <!-- 运动轨迹 -->
+    <path d="M 50 80 Q 75 50 100 20" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  </g>
+  
+  <!-- ========== 帧 4: 牌到达手牌区 ========== -->
+  <g transform="translate(725, 50)">
+    <rect width="175" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="87" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 4 - 到达手牌</text>
+    
+    <!-- 手牌区 -->
+    <rect x="20" y="50" width="120" height="50" rx="25" fill="#D4AF37" opacity="0.2"/>
+    
+    <!-- 到达的牌 -->
+    <g transform="translate(60, 75) rotate(-5)">
+      <rect x="-20" y="-30" width="40" height="60" rx="4" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2"/>
+      <text x="0" y="5" font-size="16" text-anchor="middle" fill="#C41E3A">♥</text>
+    </g>
+  </g>
+  
+  <!-- ========== 帧 5-8: 连续发牌 ========== -->
+  <g transform="translate(50, 220)">
+    <rect width="675" height="120" fill="#2E5936" opacity="0.5"/>
+    <text x="337" y="20" font-family="Noto Serif SC, serif" font-size="12" fill="#D4AF37" text-anchor="middle">帧 5-8 - 连续发牌 (扇形展开)</text>
+    
+    <!-- 手牌区 -->
+    <rect x="50" y="60" width="550" height="40" rx="20" fill="#D4AF37" opacity="0.15"/>
+    
+    <!-- 已发的牌 (扇形排列) -->
+    <g transform="translate(100, 80)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="1" transform="rotate(-15)"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#C41E3A" transform="rotate(-15)">♥</text>
+    </g>
+    
+    <g transform="translate(150, 80)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="1" transform="rotate(-8)"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#C41E3A" transform="rotate(-8)">♦</text>
+    </g>
+    
+    <g transform="translate(200, 80)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="1"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#2E8B57">♣</text>
+    </g>
+    
+    <g transform="translate(250, 80)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="1" transform="rotate(8)"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#1A1A1A" transform="rotate(8)">♠</text>
+    </g>
+    
+    <g transform="translate(300, 80)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="1" transform="rotate(15)"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#C41E3A" transform="rotate(15)">♥</text>
+    </g>
+    
+    <!-- 正在发的牌 -->
+    <g transform="translate(400, 50) rotate(-20)">
+      <rect x="-15" y="-25" width="30" height="50" rx="3" fill="url(#cardGrad)" stroke="#D4AF37" stroke-width="2" filter="url(#goldGlow)"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#D4AF37">🂠</text>
+    </g>
+    
+    <!-- 轨迹线 -->
+    <path d="M 350 70 Q 375 60 400 50" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  </g>
+  
+  <!-- 动画说明 -->
+  <g transform="translate(50, 400)">
+    <text x="0" y="0" font-family="Noto Serif SC, serif" font-size="14" fill="#D4AF37" font-weight="bold">动画参数:</text>
+    <text x="20" y="25" font-family="Arial" font-size="12" fill="#F5F0E6">• 总帧数：8 帧</text>
+    <text x="20" y="45" font-family="Arial" font-size="12" fill="#F5F0E6">• 动画时长：600ms (每帧 75ms)</text>
+    <text x="20" y="65" font-family="Arial" font-size="12" fill="#F5F0E6">• 缓动函数：ease-out (先快后慢)</text>
+    <text x="20" y="85" font-family="Arial" font-size="12" fill="#F5F0E6">• 旋转角度：-30° 到 -5°</text>
+    <text x="20" y="105" font-family="Arial" font-size="12" fill="#F5F0E6">• 缩放：1.0 到 0.8 (远小近大)</text>
+  </g>
+  
+  <!-- CSS 动画示例 -->
+  <g transform="translate(400, 400)">
+    <text x="0" y="0" font-family="Noto Serif SC, serif" font-size="14" fill="#D4AF37" font-weight="bold">CSS 动画示例:</text>
+    <text x="20" y="25" font-family="monospace" font-size="10" fill="#F5F0E6">@keyframes dealCard {</text>
+    <text x="30" y="40" font-family="monospace" font-size="10" fill="#F5F0E6">0% { transform: translate(0,0) rotate(-30°); }</text>
+    <text x="30" y="55" font-family="monospace" font-size="10" fill="#F5F0E6">100% { transform: translate(300px,80px) rotate(-5°); }</text>
+    <text x="20" y="70" font-family="monospace" font-size="10" fill="#F5F0E6">}</text>
+    <text x="20" y="90" font-family="monospace" font-size="10" fill="#F5F0E6">.card { animation: dealCard 0.6s ease-out; }</text>
+  </g>
+  
+  <!-- 装饰边框 -->
+  <rect x="10" y="10" width="780" height="580" rx="10" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="10,5"/>
+</svg>
