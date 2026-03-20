@@ -1,0 +1,138 @@
+/**
+ * 掼蛋大师 - 配色规范
+ * 设计师：画虾
+ * 日期：2026-03-20
+ */
+
+/* ============================================
+   方案 A: 典雅中国风
+   ============================================ */
+
+:root {
+  /* 主色调 */
+  --style-a-red: #C41E3A;        /* 朱红 - 宫殿红 */
+  --style-a-black: #1A1A1A;      /* 墨黑 */
+  --style-a-cream: #F5F0E6;      /* 米白 */
+  --style-a-gold: #D4AF37;       /* 金色 */
+  
+  /* 辅助色 */
+  --style-a-green: #2E8B57;      /* 青绿 - 草花 */
+  --style-a-blue: #1E3A8A;       /* 宝蓝 - 黑桃 */
+  --style-a-gray: #E8E4D9;       /* 暖灰 */
+  
+  /* 花色专用色 */
+  --style-a-hearts: #C41E3A;     /* 红桃 */
+  --style-a-diamonds: #C41E3A;   /* 方块 */
+  --style-a-clubs: #2E8B57;      /* 草花 */
+  --style-a-spades: #1A1A1A;     /* 黑桃 */
+}
+
+/* ============================================
+   方案 B: 现代轻奢风
+   ============================================ */
+
+:root {
+  /* 主色调 */
+  --style-b-navy: #1B263B;       /* 深空蓝 */
+  --style-b-gold: #C9A961;       /* 香槟金 */
+  --style-b-white: #FFFFFF;      /* 珍珠白 */
+  --style-b-charcoal: #2D3436;   /* 炭灰 */
+  
+  /* 辅助色 */
+  --style-b-coral: #FF6B6B;      /* 珊瑚红 */
+  --style-b-teal: #2EC4B6;       /* 翡翠绿 */
+  --style-b-violet: #6C5CE7;     /* 紫罗兰 */
+  
+  /* 花色专用色 */
+  --style-b-hearts: #FF6B6B;     /* 红桃 */
+  --style-b-diamonds: #FF6B6B;   /* 方块 */
+  --style-b-clubs: #2EC4B6;      /* 草花 */
+  --style-b-spades: #1B263B;     /* 黑桃 */
+}
+
+/* ============================================
+   方案 C: 清新国潮风
+   ============================================ */
+
+:root {
+  /* 主色调 */
+  --style-c-red: #E63946;        /* 国潮红 */
+  --style-c-teal: #457B9D;       /* 松石绿 */
+  --style-c-sand: #F1FAEE;       /* 暖沙色 */
+  --style-c-navy: #1D3557;       /* 深邃蓝 */
+  
+  /* 辅助色 */
+  --style-c-yellow: #FFB703;     /* 明黄 */
+  --style-c-orange: #FB8500;     /* 粉橙 */
+  --style-c-purple: #8338EC;     /* 淡紫 */
+  
+  /* 花色专用色 */
+  --style-c-hearts: #E63946;     /* 红桃 */
+  --style-c-diamonds: #E63946;   /* 方块 */
+  --style-c-clubs: #457B9D;      /* 草花 */
+  --style-c-spades: #1D3557;     /* 黑桃 */
+}
+
+/* ============================================
+   通用功能色
+   ============================================ */
+
+:root {
+  /* 状态色 */
+  --color-success: #2ECC71;
+  --color-warning: #F39C12;
+  --color-error: #E74C3C;
+  --color-info: #3498DB;
+  
+  /* 按钮状态 */
+  --btn-primary: var(--style-a-red);
+  --btn-secondary: var(--style-a-gold);
+  --btn-disabled: #95A5A6;
+  
+  /* 文字色 */
+  --text-primary: #1A1A1A;
+  --text-secondary: #555555;
+  --text-muted: #999999;
+  --text-light: #FFFFFF;
+  
+  /* 特殊牌型 */
+  --bomb-fire: #FF4500;
+  --royal-flash: #FFD700;
+  --straight-rainbow: linear-gradient(90deg, #FF6B6B, #FFB703, #2EC4B6, #6C5CE7);
+}
+
+/* ============================================
+   渐变定义
+   ============================================ */
+
+.gradient-gold {
+  background: linear-gradient(135deg, #D4AF37 0%, #F4E5B1 50%, #C9A961 100%);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, #C41E3A 0%, #E63946 100%);
+}
+
+.gradient-dark {
+  background: linear-gradient(180deg, #1B263B 0%, #2D3436 100%);
+}
+
+/* ============================================
+   阴影定义
+   ============================================ */
+
+.shadow-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-button {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
