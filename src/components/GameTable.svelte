@@ -3,8 +3,10 @@
   import PlayerArea from './PlayerArea.svelte'
   import TurnIndicator from './TurnIndicator.svelte'
   import Card from './Card.svelte'
+  import { validateHand, canBeat } from '../utils/rules.js'
   
   let selectedCards = []
+  let errorMsg = ''
   
   function toggleCard(card) {
     const index = selectedCards.indexOf(card)
@@ -16,12 +18,34 @@
   }
   
   function playCards() {
-    if (selectedCards.length === 0) return
+    if (selectedCards.length === 0) {
+      errorMsg = '请选择牌'
+      setTimeout(() => errorMsg = '', 2000)
+      return
+    }
     if ($game.currentTurn !== 'bottom') return
+    
+    // 验证牌型
+    const result = validateHand(selectedCards)
+    if (!result.valid) {
+      errorMsg = result.message
+      setTimeout(() => errorMsg = '', 2000)
+      return
+    }
+    
+    // 检查是否能管上
+    if ($game.lastHand && $game.lastHand.player !== 'bottom') {
+      if (!canBeat(selectedCards, $game.lastHand.cards)) {
+        errorMsg = '管不上！'
+        setTimeout(() => errorMsg = '', 2000)
+        return
+      }
+    }
     
     // 出牌
     game.playCards('bottom', selectedCards)
     selectedCards = []
+    errorMsg = ''
     
     // 检查是否胜利
     if ($game.players.bottom.length === 0) {
@@ -87,6 +111,10 @@
     </div>
     
     <div class="action-buttons">
+      {#if errorMsg}
+        <div class="error-message">{errorMsg}</div>
+      {/if}
+      
       <button 
         class="btn-play" 
         disabled={selectedCards.length === 0 || $game.currentTurn !== 'bottom'}
@@ -178,14 +206,37 @@
   
   .my-hand {
     display: flex;
-    gap: -30px;
+    justify-content: center;
+    align-items: flex-end;
     margin: 10px 0;
+    padding: 20px 40px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    max-width: 1200px;
+    overflow-x: auto;
   }
   
   .action-buttons {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
     margin-top: 20px;
+  }
+  
+  .error-message {
+    color: #ff6b6b;
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+    animation: pulse 0.5s ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
   
   .btn-play, .btn-pass {

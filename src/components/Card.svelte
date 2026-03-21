@@ -60,20 +60,20 @@
 
 <style>
   .card {
-    width: 100px;
-    height: 140px;
+    width: 80px;
+    height: 112px;
     background: white;
     border: 3px solid;
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
-    margin-left: -30px;
+    margin-left: -40px;
   }
   
   .card:first-child {
@@ -81,55 +81,46 @@
   }
   
   .card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-15px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.4);
   }
   
   .card.selected {
-    transform: translateY(-20px);
+    transform: translateY(-25px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.4);
     border-width: 4px;
     border-color: gold !important;
   }
   
   .card.small {
-    width: 60px;
-    height: 84px;
-    padding: 5px;
-    margin-left: -15px;
-    font-size: 12px;
-  }
-  
-  .card-top, .card-bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  .card.small .card-top, .card.small .card-bottom {
-    font-size: 10px;
+    width: 50px;
+    height: 70px;
+    margin-left: -20px;
   }
   
   .card-center {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
+    font-size: 56px;
   }
   
   .card.small .card-center {
-    font-size: 28px;
+    font-size: 36px;
   }
   
   .joker-icon {
-    font-size: 32px;
+    font-size: 40px;
   }
   
   .joker-label {
-    font-size: 12px;
+    font-size: 10px;
     color: #f39c12;
     font-weight: bold;
+  }
+  
+  /* 隐藏牌面数字 */
+  .card-top, .card-bottom {
+    display: none;
   }
 </style>
