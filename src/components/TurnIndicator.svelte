@@ -2,7 +2,7 @@
   import { game } from '../stores/game'
   
   $: currentPlayerName = (() => {
-    const names: Record<string, string> = {
+    const names = {
       top: '对家',
       left: 'AI 左',
       right: 'AI 右',
