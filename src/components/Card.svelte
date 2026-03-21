@@ -16,7 +16,7 @@
     }
   }
   
-  const suitIcons: Record<string, string> = {
+  const suitIcons = {
     clubs: '♣',
     diamonds: '♦',
     hearts: '♥',
@@ -24,7 +24,7 @@
     joker: '👑'
   }
   
-  const suitColors: Record<string, string> = {
+  const suitColors = {
     clubs: '#2c3e50',
     diamonds: '#e74c3c',
     hearts: '#e74c3c',

@@ -6,7 +6,7 @@
   
   let selectedCards = []
   
-  function toggleCard(card: Card) {
+  function toggleCard(card) {
     const index = selectedCards.indexOf(card)
     if (index > -1) {
       selectedCards = selectedCards.filter(c => c !== card)
@@ -21,7 +21,6 @@
     
     // 出牌
     game.playCards('bottom', selectedCards)
-    const playedCards = [...selectedCards]
     selectedCards = []
     
     // 检查是否胜利
