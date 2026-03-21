@@ -372,13 +372,20 @@ class GuandanGame {
             const positions = Object.values(PLAYER_POSITIONS);
             let cardIndex = 0;
             const handContainer = document.getElementById('my-hand');
+            if (!handContainer) {
+                console.error('❌ handContainer not found!');
+                resolve();
+                return;
+            }
             handContainer.innerHTML = '';
             
             // 轮流发牌，带动画
             const dealOneCard = () => {
                 if (cardIndex >= this.state.deck.length) {
                     // 发牌完成
+                    console.log('✅ 发牌完成，共', cardIndex, '张');
                     this.sortHand();
+                    this.dealAnimationComplete = true;
                     resolve(); // 通知发牌完成
                     return;
                 }
@@ -391,9 +398,13 @@ class GuandanGame {
                 // 如果是玩家，添加卡牌到 UI（带动画）
                 if (pos === PLAYER_POSITIONS.BOTTOM) {
                     const card = this.state.deck[cardIndex];
-                    const cardEl = this.createCardElement(card, this.state.players[pos].length - 1);
-                    cardEl.classList.add('card-deal-anim');
-                    handContainer.appendChild(cardEl);
+                    try {
+                        const cardEl = this.createCardElement(card, this.state.players[pos].length - 1);
+                        cardEl.classList.add('card-deal-anim');
+                        handContainer.appendChild(cardEl);
+                    } catch (e) {
+                        console.error('❌ 创建卡牌失败:', e);
+                    }
                 }
                 
                 cardIndex++;
@@ -402,6 +413,7 @@ class GuandanGame {
                 setTimeout(dealOneCard, 50);
             };
             
+            console.log('🃏 开始发牌，共', this.state.deck.length, '张');
             dealOneCard();
         });
     }
