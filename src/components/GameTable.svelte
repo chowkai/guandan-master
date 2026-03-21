@@ -251,8 +251,8 @@
     padding: 20px;
     background: rgba(0,0,0,0.4);
     border-radius: 15px;
-    min-height: 350px;
-    min-width: 250px;
+    min-height: 220px;
+    min-width: 180px;
   }
   
   .played-area.top { grid-area: top; }
@@ -279,7 +279,7 @@
     position: absolute;
     top: 80px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 0);
     display: flex;
     gap: 30px;
     background: rgba(0,0,0,0.6);
@@ -287,6 +287,7 @@
     border-radius: 20px;
     border: 2px solid gold;
     z-index: 100;
+    white-space: nowrap;
   }
   
   .level-info, .game-info {
@@ -343,15 +344,20 @@
   }
   
   .play-hint {
+    position: fixed;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 20px;
     color: gold;
     font-weight: bold;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     padding: 12px 30px;
     border-radius: 20px;
-    margin-top: 15px;
     border: 2px solid gold;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    z-index: 200;
+    white-space: nowrap;
   }
   
   .error-message {

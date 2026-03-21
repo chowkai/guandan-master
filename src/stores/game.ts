@@ -169,9 +169,16 @@ function createGameStore() {
     aiPlay(player) {
       const state = this.getState()
       const hand = state.players[player]
-      if (!hand || hand.length === 0) return
+      if (!hand || hand.length === 0) {
+        console.error('❌ AI 手牌为空:', player)
+        // 手牌为空，直接跳过
+        setTimeout(() => {
+          this.nextTurn()
+        }, 100)
+        return
+      }
       
-      console.log('🤖 AI 出牌:', player)
+      console.log('🤖 AI 出牌:', player, '手牌数:', hand.length)
       
       // 简单策略：出最小的单张
       const card = hand[hand.length - 1]

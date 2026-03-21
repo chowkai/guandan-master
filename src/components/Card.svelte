@@ -60,8 +60,8 @@
 
 <style>
   .card {
-    width: 200px;
-    height: 290px;
+    width: 120px;
+    height: 168px;
     background: white;
     border: 3px solid;
     border-radius: 10px;
@@ -73,8 +73,9 @@
     transition: all 0.2s;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
-    margin-left: -100px;
+    margin-left: -60px;
     overflow: hidden;
+    aspect-ratio: 5 / 7;
   }
   
   .card:first-child {
@@ -125,37 +126,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 128px;
+    font-size: 72px;
   }
   
   .card.small .card-center {
-    font-size: 128px;
+    font-size: 72px;
   }
   
   .joker-icon {
-    font-size: 96px;
+    font-size: 54px;
   }
   
   .joker-label {
-    font-size: 20px;
+    font-size: 12px;
     color: #f39c12;
     font-weight: bold;
-    margin-top: 4px;
+    margin-top: 2px;
   }
   
   .card-top {
     position: absolute;
-    top: 10px;
-    left: 16px;
+    top: 6px;
+    left: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 32px;
+    font-size: 20px;
     font-weight: bold;
     line-height: 1;
   }
   
   .card.small .card-top {
-    font-size: 32px;
+    font-size: 20px;
   }
 </style>
