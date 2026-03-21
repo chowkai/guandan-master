@@ -1245,6 +1245,8 @@ class GuandanGame {
         // 更新底部状态栏指示器
         if (indicator) {
             indicator.textContent = `${playerName} 出牌`;
+        } else {
+            console.warn('⚠️ current-turn element not found');
         }
         
         // 更新顶部提示条
@@ -1256,18 +1258,24 @@ class GuandanGame {
                 turnMessage.textContent = `轮到 ${playerName} 出牌`;
                 turnMessage.parentElement.style.background = 'linear-gradient(135deg, #c0392b, #e74c3c)';
             }
+        } else {
+            console.warn('⚠️ turn-message element not found');
         }
         
         // 更新状态标记
-        document.querySelectorAll('.status-badge').forEach(el => {
-            el.classList.remove('active');
-            el.textContent = '';
-        });
-        
-        const activeBadge = document.getElementById(`${this.state.currentTurn}-status`);
-        if (activeBadge) {
-            activeBadge.textContent = '思考中...';
-            activeBadge.classList.add('active');
+        try {
+            document.querySelectorAll('.status-badge').forEach(el => {
+                el.classList.remove('active');
+                el.textContent = '';
+            });
+            
+            const activeBadge = document.getElementById(`${this.state.currentTurn}-status`);
+            if (activeBadge) {
+                activeBadge.textContent = '思考中...';
+                activeBadge.classList.add('active');
+            }
+        } catch (e) {
+            console.error('❌ 更新状态标记失败:', e);
         }
         
         // 更新游戏状态
@@ -1295,7 +1303,12 @@ class GuandanGame {
      * 更新游戏状态显示
      */
     updateGameStatus(message) {
-        document.getElementById('game-status').textContent = message;
+        const statusEl = document.getElementById('game-status');
+        if (statusEl) {
+            statusEl.textContent = message;
+        } else {
+            console.warn('⚠️ game-status element not found');
+        }
     }
     
     /**
@@ -1303,6 +1316,10 @@ class GuandanGame {
      */
     showGameMessage(message) {
         const msgEl = document.getElementById('game-message');
+        if (!msgEl) {
+            console.warn('⚠️ game-message element not found');
+            return;
+        }
         msgEl.textContent = message;
         msgEl.style.display = 'block';
         
