@@ -179,7 +179,9 @@ function createGameStore() {
       
       // 检查是否胜利
       if (hand.length === 1) {
-        alert('🎉 ' + player + ' 赢了！')
+        setTimeout(() => {
+          alert('🎉 ' + player + ' 赢了！')
+        }, 100)
         return
       }
       
