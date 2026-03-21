@@ -55,11 +55,9 @@ class GameState {
         this.selectedCards = [];           // 选中的牌
         this.passCount = 0;                // 连续不要次数
         this.winner = null;                // 获胜者
+        this.previousRankings = null;      // 上局排名 [(position, rank), ...]
     }
 }
-
-// 报牌提醒标记（每个玩家是否已提醒）
-const hasReminded = {};
 
 // ========================================
 // 游戏主类
@@ -156,6 +154,22 @@ class GuandanGame {
             this.saveSettings();
         });
         
+        // 贡牌面板按钮
+        document.getElementById('btn-resist-ok').addEventListener('click', () => {
+            this.hideTributePanel();
+            // 抗贡：头游先出牌
+            const rankings = this.state.previousRankings;
+            const playerByRank = {};
+            rankings.forEach(([position, rank]) => {
+                playerByRank[rank] = position;
+            });
+            const headYou = playerByRank[1];
+            this.state.currentTurn = headYou;
+            this.state.gameStatus = 'playing';
+            this.updateTurnIndicator();
+            this.showGameMessage('抗贡成功，游戏开始！');
+        });
+        
         // 游戏结束 - 再来一局
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.hideGameOver();
@@ -211,7 +225,7 @@ class GuandanGame {
     /**
      * 开始新游戏
      */
-    startNewGame() {
+    async startNewGame() {
         this.state = new GameState();
         this.state.level = 2;
         
@@ -228,28 +242,46 @@ class GuandanGame {
         // 洗牌
         this.shuffleDeck();
         
-        // 发牌（带动画）
-        this.dealCardsWithAnimation();
-        
-        // 整理手牌
-        this.sortHand();
+        // 发牌（带动画）- 等待发牌完成
+        await this.dealCardsWithAnimation();
         
         // 更新 UI
         this.updateUI();
         
-        // 确定先手（简化：总是玩家先手）
-        this.state.currentTurn = PLAYER_POSITIONS.BOTTOM;
-        this.state.gameStatus = 'playing';
-        
-        // 更新状态显示
-        this.updateGameStatus('游戏开始！请出牌');
-        this.updateTurnIndicator();
-        
         // 播放发牌音效
         this.playSound('deal');
         
+        // 检查是否需要贡牌（第一局不需要）
+        if (this.state.previousRankings && this.state.previousRankings.length > 0) {
+            // 有上局排名，执行贡牌阶段
+            this.executeTributePhase();
+        } else {
+            // 第一局，随机指定先手
+            const positions = Object.values(PLAYER_POSITIONS);
+            this.state.currentTurn = positions[Math.floor(Math.random() * 4)];
+            this.state.gameStatus = 'playing';
+            
+            // 更新状态显示
+            this.updateGameStatus('游戏开始！请出牌');
+            this.updateTurnIndicator();
+            
+            const currentPlayerName = this.getPlayerName(this.state.currentTurn);
+            this.showGameMessage(`${currentPlayerName} 先出牌！`);
+            
+            // 更新提示条显示先手玩家
+            const turnMessage = document.getElementById('turn-message');
+            if (turnMessage) {
+                if (this.state.currentTurn === PLAYER_POSITIONS.BOTTOM) {
+                    turnMessage.textContent = '轮到你先出牌';
+                    turnMessage.parentElement.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                } else {
+                    turnMessage.textContent = `${currentPlayerName} 先出牌`;
+                    turnMessage.parentElement.style.background = 'linear-gradient(135deg, #c0392b, #e74c3c)';
+                }
+            }
+        }
+        
         this.hideGameOver();
-        this.showGameMessage('新游戏开始！');
     }
     
     /**
@@ -326,48 +358,321 @@ class GuandanGame {
     
     /**
      * 发牌带动画
+     * @returns {Promise} 发牌完成后 resolve
      */
     dealCardsWithAnimation() {
-        this.state.players = {
-            [PLAYER_POSITIONS.TOP]: [],
-            [PLAYER_POSITIONS.LEFT]: [],
-            [PLAYER_POSITIONS.RIGHT]: [],
-            [PLAYER_POSITIONS.BOTTOM]: []
-        };
+        return new Promise((resolve) => {
+            this.state.players = {
+                [PLAYER_POSITIONS.TOP]: [],
+                [PLAYER_POSITIONS.LEFT]: [],
+                [PLAYER_POSITIONS.RIGHT]: [],
+                [PLAYER_POSITIONS.BOTTOM]: []
+            };
+            
+            const positions = Object.values(PLAYER_POSITIONS);
+            let cardIndex = 0;
+            const handContainer = document.getElementById('my-hand');
+            handContainer.innerHTML = '';
+            
+            // 轮流发牌，带动画
+            const dealOneCard = () => {
+                if (cardIndex >= this.state.deck.length) {
+                    // 发牌完成
+                    this.sortHand();
+                    resolve(); // 通知发牌完成
+                    return;
+                }
+                
+                const posIndex = cardIndex % 4;
+                const pos = positions[posIndex];
+                
+                this.state.players[pos].push(this.state.deck[cardIndex]);
+                
+                // 如果是玩家，添加卡牌到 UI（带动画）
+                if (pos === PLAYER_POSITIONS.BOTTOM) {
+                    const card = this.state.deck[cardIndex];
+                    const cardEl = this.createCardElement(card, this.state.players[pos].length - 1);
+                    cardEl.classList.add('card-deal-anim');
+                    handContainer.appendChild(cardEl);
+                }
+                
+                cardIndex++;
+                
+                // 继续发下一张
+                setTimeout(dealOneCard, 50);
+            };
+            
+            dealOneCard();
+        });
+    }
+    
+    /**
+     * 执行贡牌阶段
+     */
+    async executeTributePhase() {
+        this.showGameMessage('进入贡牌阶段');
         
-        const positions = Object.values(PLAYER_POSITIONS);
-        let cardIndex = 0;
-        const handContainer = document.getElementById('my-hand');
-        handContainer.innerHTML = '';
+        // 获取上局排名
+        const rankings = this.state.previousRankings;
+        if (!rankings || rankings.length < 4) {
+            // 排名信息不完整，跳过贡牌
+            this.startGameAfterTribute();
+            return;
+        }
         
-        // 轮流发牌，带动画
-        const dealOneCard = () => {
-            if (cardIndex >= this.state.deck.length) {
-                // 发牌完成
-                this.sortHand();
+        // 获取各名次玩家
+        const playerByRank = {};
+        rankings.forEach(([pos, rank]) => {
+            playerByRank[rank] = pos;
+        });
+        
+        const headYou = playerByRank[1];  // 头游
+        const erYou = playerByRank[2];    // 二游
+        const sanYou = playerByRank[3];   // 三游
+        const moYou = playerByRank[4];    // 末游
+        
+        // 检查抗贡（末游有 2 个大王）
+        const moYouHand = this.state.players[moYou];
+        const moYouBigJokers = moYouHand.filter(c => c.rank === RANKS.BIG_JOKER).length;
+        
+        if (moYouBigJokers >= 2) {
+            this.showGameMessage(`抗贡！${this.getPlayerName(moYou)} 有${moYouBigJokers}个大王`);
+            await this.sleep(1500);
+            // 抗贡：头游先出牌
+            this.state.currentTurn = headYou;
+            this.startGameAfterTribute();
+            return;
+        }
+        
+        // 检查是否双贡
+        const isDouble = (headYou === PLAYER_POSITIONS.BOTTOM || headYou === PLAYER_POSITIONS.TOP) && 
+                        (erYou === PLAYER_POSITIONS.BOTTOM || erYou === PLAYER_POSITIONS.TOP);
+        
+        if (isDouble) {
+            // 双贡：检查两家共有 2 个大王
+            const sanYouHand = this.state.players[sanYou];
+            const sanYouBigJokers = sanYouHand.filter(c => c.rank === RANKS.BIG_JOKER).length;
+            const totalKings = moYouBigJokers + sanYouBigJokers;
+            
+            if (totalKings >= 2) {
+                this.showGameMessage(`抗贡！三游和末游共有${totalKings}个大王`);
+                await this.sleep(1500);
+                // 抗贡：头游先出牌
+                this.state.currentTurn = headYou;
+                this.startGameAfterTribute();
                 return;
             }
             
-            const posIndex = cardIndex % 4;
-            const pos = positions[posIndex];
+            // 执行双贡
+            this.showGameMessage('双贡：三游和末游向头游和二游进贡');
+            await this.sleep(1000);
             
-            this.state.players[pos].push(this.state.deck[cardIndex]);
+            // 三游进贡给头游
+            await this.executeSingleTribute(sanYou, headYou);
             
-            // 如果是玩家，添加卡牌到 UI（带动画）
-            if (pos === PLAYER_POSITIONS.BOTTOM) {
-                const card = this.state.deck[cardIndex];
-                const cardEl = this.createCardElement(card, this.state.players[pos].length - 1);
-                cardEl.classList.add('card-deal-anim');
-                handContainer.appendChild(cardEl);
+            // 末游进贡给二游
+            await this.executeSingleTribute(moYou, erYou);
+            
+            // 双贡后，由进贡方（三游）先出牌
+            this.state.currentTurn = sanYou;
+        } else {
+            // 单贡
+            this.showGameMessage(`单贡：${this.getPlayerName(moYou)} → ${this.getPlayerName(headYou)}`);
+            await this.sleep(1000);
+            
+            // 末游进贡给头游
+            await this.executeSingleTribute(moYou, headYou);
+            
+            // 单贡后，由进贡方（末游）先出牌
+            this.state.currentTurn = moYou;
+        }
+        
+        this.startGameAfterTribute();
+    }
+    
+    /**
+     * 执行单次进贡
+     */
+    async executeSingleTribute(giverPos, receiverPos) {
+        const giverHand = this.state.players[giverPos];
+        const receiverHand = this.state.players[receiverPos];
+        
+        // 选择进贡牌（最大牌，排除红心级牌）
+        const tributeCard = this.selectTributeCard(giverHand);
+        if (!tributeCard) {
+            return;
+        }
+        
+        // 显示贡牌提示
+        this.showGameMessage(`${this.getPlayerName(giverPos)} 向 ${this.getPlayerName(receiverPos)} 进贡`);
+        
+        // 执行进贡动画
+        await this.playTributeAnimation(giverPos, receiverPos, tributeCard);
+        
+        // 转移卡牌
+        const giverIndex = giverHand.findIndex(c => 
+            c.suit === tributeCard.suit && c.rank === tributeCard.rank
+        );
+        if (giverIndex !== -1) {
+            const card = giverHand.splice(giverIndex, 1)[0];
+            receiverHand.push(card);
+            receiverHand.sort((a, b) => b.rank - a.rank);
+        }
+        
+        // 还贡
+        const returnCard = this.selectReturnCard(receiverHand);
+        if (returnCard) {
+            this.showGameMessage(`${this.getPlayerName(receiverPos)} 向 ${this.getPlayerName(giverPos)} 还贡`);
+            
+            // 执行还贡动画
+            await this.playReturnTributeAnimation(receiverPos, giverPos, returnCard);
+            
+            // 转移卡牌
+            const receiverIndex = receiverHand.findIndex(c => 
+                c.suit === returnCard.suit && c.rank === returnCard.rank
+            );
+            if (receiverIndex !== -1) {
+                const card = receiverHand.splice(receiverIndex, 1)[0];
+                giverHand.push(card);
+                giverHand.sort((a, b) => b.rank - a.rank);
             }
-            
-            cardIndex++;
-            
-            // 继续发下一张
-            setTimeout(dealOneCard, 50);
+        }
+        
+        // 更新 UI
+        this.renderMyHand();
+        this.updateOtherPlayerCardCount(giverPos);
+        this.updateOtherPlayerCardCount(receiverPos);
+    }
+    
+    /**
+     * 选择进贡牌
+     */
+    selectTributeCard(hand) {
+        if (hand.length === 0) return null;
+        
+        // 排序手牌（从大到小）
+        const sorted = [...hand].sort((a, b) => {
+            const valueA = this.getCardValue(a);
+            const valueB = this.getCardValue(b);
+            return valueB - valueA;
+        });
+        
+        // 找到最大的非红心级牌
+        for (const card of sorted) {
+            const isRedHeart = (card.isLevelCard && card.suit === SUITS.HEARTS);
+            if (!isRedHeart) {
+                return card;
+            }
+        }
+        
+        // 如果所有牌都是红心级牌，返回第一张
+        return sorted[0];
+    }
+    
+    /**
+     * 选择还贡牌（≤10 的牌，选最小的）
+     */
+    selectReturnCard(hand) {
+        if (hand.length === 0) return null;
+        
+        // 找到所有≤10 的牌
+        const validCards = hand.filter(c => c.rank <= RANKS.TEN);
+        
+        if (validCards.length === 0) return null;
+        
+        // 返回最小的牌
+        validCards.sort((a, b) => a.rank - b.rank);
+        return validCards[0];
+    }
+    
+    /**
+     * 播放进贡动画
+     */
+    async playTributeAnimation(giverPos, receiverPos, cardData) {
+        const posElements = {
+            [PLAYER_POSITIONS.BOTTOM]: document.getElementById('my-hand'),
+            [PLAYER_POSITIONS.TOP]: document.getElementById('top-hand'),
+            [PLAYER_POSITIONS.LEFT]: document.getElementById('left-hand'),
+            [PLAYER_POSITIONS.RIGHT]: document.getElementById('right-hand')
         };
         
-        dealOneCard();
+        const fromElement = posElements[giverPos];
+        const toElement = posElements[receiverPos];
+        
+        if (fromElement && toElement && window.animationManager) {
+            return new Promise(resolve => {
+                window.animationManager.tributeAnimation(
+                    fromElement,
+                    toElement,
+                    cardData,
+                    resolve
+                );
+            });
+        }
+        
+        // 如果动画不可用，直接等待
+        await this.sleep(800);
+    }
+    
+    /**
+     * 播放还贡动画
+     */
+    async playReturnTributeAnimation(fromPos, toPos, cardData) {
+        const posElements = {
+            [PLAYER_POSITIONS.BOTTOM]: document.getElementById('my-hand'),
+            [PLAYER_POSITIONS.TOP]: document.getElementById('top-hand'),
+            [PLAYER_POSITIONS.LEFT]: document.getElementById('left-hand'),
+            [PLAYER_POSITIONS.RIGHT]: document.getElementById('right-hand')
+        };
+        
+        const fromElement = posElements[fromPos];
+        const toElement = posElements[toPos];
+        
+        if (fromElement && toElement && window.animationManager) {
+            return new Promise(resolve => {
+                window.animationManager.returnTributeAnimation(
+                    fromElement,
+                    toElement,
+                    cardData,
+                    resolve
+                );
+            });
+        }
+        
+        // 如果动画不可用，直接等待
+        await this.sleep(800);
+    }
+    
+    /**
+     * 贡牌结束后开始游戏
+     */
+    startGameAfterTribute() {
+        this.state.gameStatus = 'playing';
+        this.updateGameStatus('游戏开始！请出牌');
+        this.updateTurnIndicator();
+        this.playSound('deal');
+        
+        const currentPlayerName = this.getPlayerName(this.state.currentTurn);
+        this.showGameMessage(`${currentPlayerName} 先出牌`);
+        
+        // 更新提示条显示先手玩家
+        const turnMessage = document.getElementById('turn-message');
+        if (turnMessage) {
+            if (this.state.currentTurn === PLAYER_POSITIONS.BOTTOM) {
+                turnMessage.textContent = '轮到你先出牌';
+                turnMessage.parentElement.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            } else {
+                turnMessage.textContent = `${currentPlayerName} 先出牌`;
+                turnMessage.parentElement.style.background = 'linear-gradient(135deg, #c0392b, #e74c3c)';
+            }
+        }
+    }
+    
+    /**
+     * 休眠辅助函数
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     /**
@@ -492,7 +797,7 @@ class GuandanGame {
     }
     
     /**
-     * 创建卡牌元素
+     * 创建卡牌元素 - 极简设计 v1.4
      */
     createCardElement(card, index, isBack = false) {
         const cardEl = document.createElement('div');
@@ -508,32 +813,69 @@ class GuandanGame {
                 <circle cx="100" cy="140" r="40" fill="none" stroke="#D4AF37" stroke-width="1"/>
             </svg>`;
         } else {
-            // 牌面 - 加载 SVG 文件
-            let svgPath;
+            // 牌面 - 极简设计 v1.4：左上角 + 中央，无右下角
+            const rankDisplay = this.getCardRankDisplay(card.rank);
+            const suitDisplay = this.getCardSuitDisplay(card.suit);
+            const suitColor = this.getCardSuitColor(card.suit, card.rank);
             
-            // 特殊处理王（joker）
             if (card.suit === SUITS.JOKER) {
-                if (card.rank === RANKS.SMALL_JOKER) {
-                    svgPath = `assets/images/cards/joker_small.svg`;
-                } else if (card.rank === RANKS.BIG_JOKER) {
-                    svgPath = `assets/images/cards/joker_big.svg`;
-                }
+                // 大小王 - 竖排 JOKER + 王冠
+                const jokerClass = card.rank === RANKS.BIG_JOKER ? 'card-joker-big' : 'card-joker-small';
+                cardEl.classList.add('card-joker', jokerClass);
+                cardEl.innerHTML = `
+                    <div class="card-value-top">JOKER</div>
+                    <div class="card-suit-center">👑</div>
+                `;
             } else {
-                const suitName = card.suit;
-                const rankName = card.rank === 10 ? '10' : 
-                                card.rank === 11 ? 'J' :
-                                card.rank === 12 ? 'Q' :
-                                card.rank === 13 ? 'K' :
-                                card.rank === 14 ? 'A' :
-                                card.rank.toString();
-                
-                svgPath = `assets/images/cards/${suitName}_${rankName}.svg`;
+                // 普通牌 - 左上角竖排牌字 + 小花色，中央大花色
+                cardEl.innerHTML = `
+                    <div class="card-value-top" style="color: ${suitColor}">${rankDisplay}<span class="suit">${suitDisplay}</span></div>
+                    <div class="card-suit-center" style="color: ${suitColor}">${suitDisplay}</div>
+                `;
             }
-            
-            cardEl.innerHTML = `<img src="${svgPath}" alt="${this.getCardDisplayName(card)}" style="width:100%;height:100%;object-fit:contain;">`;
         }
         
         return cardEl;
+    }
+    
+    /**
+     * 获取牌面显示字符
+     */
+    getCardRankDisplay(rank) {
+        const display = {
+            2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
+            7: '7', 8: '8', 9: '9', 10: '10',
+            11: 'J', 12: 'Q', 13: 'K', 14: 'A',
+            15: '小王', 16: '大王'
+        };
+        return display[rank] || rank.toString();
+    }
+    
+    /**
+     * 获取花色显示符号
+     */
+    getCardSuitDisplay(suit) {
+        const suits = {
+            [SUITS.CLUBS]: '♣',
+            [SUITS.DIAMONDS]: '♦',
+            [SUITS.HEARTS]: '♥',
+            [SUITS.SPADES]: '♠',
+            [SUITS.JOKER]: ''
+        };
+        return suits[suit] || '';
+    }
+    
+    /**
+     * 获取卡牌颜色
+     */
+    getCardSuitColor(suit, rank) {
+        if (suit === SUITS.JOKER) {
+            return rank === RANKS.BIG_JOKER ? '#C41E3A' : '#2E8B57';
+        }
+        if (suit === SUITS.HEARTS || suit === SUITS.DIAMONDS) {
+            return '#C41E3A'; // 红色
+        }
+        return '#2E8B57'; // 绿色/黑色
     }
     
     /**
@@ -885,9 +1227,24 @@ class GuandanGame {
      */
     updateTurnIndicator() {
         const indicator = document.getElementById('current-turn');
+        const turnMessage = document.getElementById('turn-message');
         const playerName = this.getPlayerName(this.state.currentTurn);
         
-        indicator.textContent = `${playerName} 出牌`;
+        // 更新底部状态栏指示器
+        if (indicator) {
+            indicator.textContent = `${playerName} 出牌`;
+        }
+        
+        // 更新顶部提示条
+        if (turnMessage) {
+            if (this.state.currentTurn === PLAYER_POSITIONS.BOTTOM) {
+                turnMessage.textContent = '轮到你出牌';
+                turnMessage.parentElement.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            } else {
+                turnMessage.textContent = `轮到 ${playerName} 出牌`;
+                turnMessage.parentElement.style.background = 'linear-gradient(135deg, #c0392b, #e74c3c)';
+            }
+        }
         
         // 更新状态标记
         document.querySelectorAll('.status-badge').forEach(el => {
@@ -953,6 +1310,28 @@ class GuandanGame {
     gameOver(winner) {
         this.state.gameStatus = 'over';
         this.state.winner = winner;
+        
+        // 记录排名（根据出完牌的顺序）
+        // 简化：假设 winner 是头游，其他按剩余牌数排序
+        const positions = Object.values(PLAYER_POSITIONS);
+        const rankings = [];
+        
+        // 头游
+        rankings.push([winner, 1]);
+        
+        // 其他玩家按剩余牌数排序（少的排名靠前）
+        const others = positions.filter(p => p !== winner);
+        others.sort((a, b) => {
+            return this.state.players[a].length - this.state.players[b].length;
+        });
+        
+        // 二游、三游、末游
+        rankings.push([others[0], 2]);
+        rankings.push([others[1], 3]);
+        rankings.push([others[2], 4]);
+        
+        // 保存排名供下局使用
+        this.state.previousRankings = rankings;
         
         const winnerName = this.getPlayerName(winner);
         const isPlayerWin = winner === PLAYER_POSITIONS.BOTTOM;
@@ -1091,6 +1470,323 @@ class GuandanGame {
     }
     
     /**
+     * 执行贡牌阶段（使用动画）
+     * 正确规则：贡牌后由进贡方先出牌，抗贡由头游先出牌
+     */
+    async executeTributePhase() {
+        const tributePanel = document.getElementById('tribute-panel');
+        const tributeMessage = document.getElementById('tribute-message');
+        const tributeInfo = document.getElementById('tribute-info');
+        
+        // 获取上局排名
+        const rankings = this.state.previousRankings;
+        if (!rankings || rankings.length === 0) {
+            return;
+        }
+        
+        // 确定头游、二游、三游、末游
+        const playerByRank = {};
+        rankings.forEach(([position, rank]) => {
+            playerByRank[rank] = position;
+        });
+        
+        const headYou = playerByRank[1]; // 头游
+        const erYou = playerByRank[2];   // 二游
+        const sanYou = playerByRank[3];  // 三游
+        const moYou = playerByRank[4];   // 末游
+        
+        // 判断是否双贡
+        const isDouble = ((headYou === 'bottom' && erYou === 'top') || 
+                         (headYou === 'top' && erYou === 'bottom') ||
+                         (headYou === 'left' && erYou === 'right') ||
+                         (headYou === 'right' && erYou === 'left'));
+        
+        // 检查抗贡（末游有 2 个大王）
+        const myHand = this.state.players['bottom'] || [];
+        const bigJokerCount = myHand.filter(c => c.rank === RANKS.BIG_JOKER).length;
+        
+        if (bigJokerCount >= 2 && moYou === 'bottom') {
+            // 抗贡
+            tributeMessage.textContent = '🎉 抗贡成功！';
+            tributeInfo.textContent = '你有 2 个大王，跳过贡牌阶段';
+            document.getElementById('resist-section').style.display = 'block';
+            tributePanel.classList.add('show');
+            // 抗贡：头游先出牌
+            this.state.currentTurn = headYou;
+            return;
+        }
+        
+        // 显示贡牌信息
+        if (isDouble) {
+            tributeMessage.textContent = '双贡';
+            tributeInfo.textContent = '三游和末游向头游和二游进贡';
+        } else {
+            tributeMessage.textContent = '单贡';
+            tributeInfo.textContent = `末游 (${this.getPlayerName(moYou)}) → 头游 (${this.getPlayerName(headYou)})`;
+        }
+        
+        tributePanel.classList.add('show');
+        
+        // 执行贡牌动画
+        await this.executeTributeAnimation(moYou, headYou, sanYou, erYou, isDouble);
+        
+        // 贡牌结束，由进贡方先出牌（重要！）
+        if (isDouble) {
+            // 双贡：三游先出牌（给头游进贡的）
+            this.state.currentTurn = sanYou;
+        } else {
+            // 单贡：末游先出牌
+            this.state.currentTurn = moYou;
+        }
+        
+        this.hideTributePanel();
+        this.state.gameStatus = 'playing';
+        this.updateTurnIndicator();
+        this.showGameMessage('贡牌结束，游戏开始！');
+    }
+    
+    /**
+     * 执行贡牌动画
+     */
+    async executeTributeAnimation(moYou, headYou, sanYou, erYou, isDouble) {
+        if (!window.animationManager) {
+            // 没有动画管理器，直接返回
+            await this.sleep(1000);
+            return;
+        }
+        
+        if (isDouble) {
+            // 双贡：三游→头游，末游→二游
+            await this.playSingleTributeAnimation(sanYou, headYou);
+            await this.sleep(500);
+            await this.playSingleTributeAnimation(moYou, erYou);
+        } else {
+            // 单贡：末游→头游
+            await this.playSingleTributeAnimation(moYou, headYou);
+        }
+        
+        await this.sleep(500);
+    }
+    
+    /**
+     * 播放单次贡牌动画
+     */
+    async playSingleTributeAnimation(fromPos, toPos) {
+        const fromPlayer = this.state.players[fromPos] || [];
+        const toPlayer = this.state.players[toPos] || [];
+        
+        // 选择进贡牌（最大牌）
+        const sortedHand = [...fromPlayer].sort((a, b) => {
+            const aValue = a.isLevelCard ? 14.5 : a.rank;
+            const bValue = b.isLevelCard ? 14.5 : b.rank;
+            return bValue - aValue;
+        });
+        
+        let tributeCard = sortedHand.find(c => !(c.isLevelCard && c.suit === SUITS.HEARTS));
+        if (!tributeCard) tributeCard = sortedHand[0];
+        
+        // 选择还贡牌（≤10 的最小数）
+        const validReturns = toPlayer.filter(c => c.rank <= RANKS.TEN);
+        let returnCard = null;
+        if (validReturns.length > 0) {
+            validReturns.sort((a, b) => a.rank - b.rank);
+            returnCard = validReturns[0];
+        }
+        
+        // 播放动画
+        return new Promise(resolve => {
+            window.animationManager.tributeAnimation({
+                fromPosition: fromPos,
+                toPosition: toPos,
+                tributeCard: tributeCard,
+                returnCard: returnCard,
+                onComplete: () => {
+                    // 更新手牌
+                    const tributeIndex = fromPlayer.indexOf(tributeCard);
+                    if (tributeIndex > -1) fromPlayer.splice(tributeIndex, 1);
+                    
+                    if (returnCard) {
+                        const returnIndex = toPlayer.indexOf(returnCard);
+                        if (returnIndex > -1) toPlayer.splice(returnIndex, 1);
+                        fromPlayer.push(returnCard);
+                    }
+                    
+                    // 排序手牌
+                    fromPlayer.sort((a, b) => b.rank - a.rank);
+                    toPlayer.sort((a, b) => b.rank - a.rank);
+                    
+                    resolve();
+                }
+            });
+        });
+    }
+    
+    /**
+     * 延时工具
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /**
+     * 显示进贡牌选择界面
+     */
+    showTributeSelect(isDouble) {
+        const selectSection = document.getElementById('tribute-select-section');
+        const cardsContainer = document.getElementById('tribute-cards-container');
+        
+        selectSection.style.display = 'block';
+        cardsContainer.innerHTML = '';
+        
+        const myHand = this.state.players['bottom'] || [];
+        let selectedCard = null;
+        
+        // 显示所有手牌供选择
+        myHand.forEach((card, index) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'tribute-card' + (card.suit === SUITS.HEARTS || card.suit === SUITS.DIAMONDS ? ' red' : ' black');
+            cardEl.textContent = RANK_DISPLAY[card.rank];
+            cardEl.dataset.index = index;
+            
+            cardEl.addEventListener('click', () => {
+                // 取消其他选择
+                document.querySelectorAll('.tribute-card').forEach(c => c.classList.remove('selected'));
+                cardEl.classList.add('selected');
+                selectedCard = card;
+                document.getElementById('btn-tribute-confirm').disabled = false;
+            });
+            
+            cardsContainer.appendChild(cardEl);
+        });
+        
+        // 自动选牌按钮
+        document.getElementById('btn-tribute-auto').onclick = () => {
+            // 选择最大的非红心级牌
+            const sortedHand = [...myHand].sort((a, b) => {
+                const aValue = a.isLevelCard ? 14.5 : a.rank;
+                const bValue = b.isLevelCard ? 14.5 : b.rank;
+                return bValue - aValue;
+            });
+            
+            for (let card of sortedHand) {
+                if (!(card.isLevelCard && card.suit === SUITS.HEARTS)) {
+                    selectedCard = card;
+                    const cardEl = document.querySelector(`.tribute-card[data-index="${myHand.indexOf(card)}"]`);
+                    if (cardEl) {
+                        document.querySelectorAll('.tribute-card').forEach(c => c.classList.remove('selected'));
+                        cardEl.classList.add('selected');
+                        document.getElementById('btn-tribute-confirm').disabled = false;
+                    }
+                    break;
+                }
+            }
+        };
+        
+        // 确认进贡按钮
+        document.getElementById('btn-tribute-confirm').onclick = () => {
+            if (selectedCard) {
+                // 移除进贡牌
+                const index = myHand.indexOf(selectedCard);
+                if (index > -1) {
+                    myHand.splice(index, 1);
+                }
+                
+                // 添加一张随机牌（还贡）
+                const returnCard = myHand.find(c => c.rank <= RANKS.TEN);
+                if (returnCard) {
+                    // 简化：直接移除一张≤10 的牌
+                }
+                
+                selectSection.style.display = 'none';
+                this.hideTributePanel();
+                
+                // 游戏开始 - 由进贡方先出牌
+                this.state.gameStatus = 'playing';
+                this.updateTurnIndicator();
+                this.startGameAfterTribute();
+            }
+        };
+    }
+    
+    /**
+     * 显示还贡牌选择界面
+     */
+    showReturnSelect() {
+        const selectSection = document.getElementById('return-select-section');
+        const cardsContainer = document.getElementById('return-cards-container');
+        
+        selectSection.style.display = 'block';
+        cardsContainer.innerHTML = '';
+        
+        const myHand = this.state.players['bottom'] || [];
+        let selectedCard = null;
+        
+        // 只显示≤10 的牌
+        const validCards = myHand.filter(c => c.rank <= RANKS.TEN);
+        
+        if (validCards.length === 0) {
+            selectSection.style.display = 'none';
+            this.hideTributePanel();
+            return;
+        }
+        
+        validCards.forEach((card) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'tribute-card' + (card.suit === SUITS.HEARTS || card.suit === SUITS.DIAMONDS ? ' red' : ' black');
+            cardEl.textContent = RANK_DISPLAY[card.rank];
+            
+            cardEl.addEventListener('click', () => {
+                document.querySelectorAll('.tribute-card').forEach(c => c.classList.remove('selected'));
+                cardEl.classList.add('selected');
+                selectedCard = card;
+                document.getElementById('btn-return-confirm').disabled = false;
+            });
+            
+            cardsContainer.appendChild(cardEl);
+        });
+        
+        // 自动选牌按钮（选最小的）
+        document.getElementById('btn-return-auto').onclick = () => {
+            const sortedCards = [...validCards].sort((a, b) => a.rank - b.rank);
+            selectedCard = sortedCards[0];
+            const cardEl = document.querySelector(`.tribute-card`);
+            if (cardEl) {
+                document.querySelectorAll('.tribute-card').forEach(c => c.classList.remove('selected'));
+                cardEl.classList.add('selected');
+                document.getElementById('btn-return-confirm').disabled = false;
+            }
+        };
+        
+        // 确认还贡按钮
+        document.getElementById('btn-return-confirm').onclick = () => {
+            if (selectedCard) {
+                const index = myHand.indexOf(selectedCard);
+                if (index > -1) {
+                    myHand.splice(index, 1);
+                }
+                
+                selectSection.style.display = 'none';
+                this.hideTributePanel();
+                
+                // 游戏开始 - 由进贡方先出牌
+                this.state.gameStatus = 'playing';
+                this.updateTurnIndicator();
+                this.startGameAfterTribute();
+            }
+        };
+    }
+    
+    /**
+     * 隐藏贡牌面板
+     */
+    hideTributePanel() {
+        document.getElementById('tribute-panel').classList.remove('show');
+        document.getElementById('tribute-select-section').style.display = 'none';
+        document.getElementById('return-select-section').style.display = 'none';
+        document.getElementById('resist-section').style.display = 'none';
+    }
+    
+    /**
      * 退出游戏
      */
     quitGame() {
@@ -1100,6 +1796,73 @@ class GuandanGame {
             this.updateGameStatus('已退出');
             this.showGameMessage('再见！');
         }
+    }
+    
+    /**
+     * 调试模式
+     */
+    enableDebugMode() {
+        console.log('🎮 调试模式已启用 - 访问 https://github.com/chowkai/guandan-master');
+        
+        // 暴露 game 实例到全局
+        window.gameInstance = this;
+        window.game = this;
+        
+        // 调试命令
+        window.debug = {
+            forcePlayerTurn: () => {
+                this.state.currentTurn = PLAYER_POSITIONS.BOTTOM;
+                this.state.gameStatus = 'playing';
+                this.updateTurnIndicator();
+                console.log('✅ 已强制玩家回合');
+            },
+            
+            skipDealAnimation: () => {
+                this.dealAnimationComplete = true;
+                console.log('✅ 已跳过发牌动画');
+            },
+            
+            status: () => {
+                const myHand = this.state.players[PLAYER_POSITIONS.BOTTOM];
+                console.table({
+                    currentTurn: this.state.currentTurn,
+                    gameStatus: this.state.gameStatus,
+                    myHandSize: myHand ? myHand.length : 0,
+                    isPlayerTurn: this.state.currentTurn === PLAYER_POSITIONS.BOTTOM,
+                    lastHandPlayer: this.state.lastHandPlayer
+                });
+            },
+            
+            autoPlay: async (times = 5) => {
+                console.log(`🔄 开始自动出牌 ${times} 次...`);
+                for (let i = 0; i < times; i++) {
+                    if (this.state.currentTurn === PLAYER_POSITIONS.BOTTOM) {
+                        const myHand = this.state.players[PLAYER_POSITIONS.BOTTOM];
+                        if (myHand && myHand.length > 0) {
+                            const card = myHand[0];
+                            this.playCard([card]);
+                            console.log(`✅ 出牌：${card.rank}${card.suit}`);
+                            await this.sleep(1000);
+                        }
+                    }
+                    await this.sleep(500);
+                }
+                console.log('✅ 自动出牌完成');
+            },
+            
+            reset: () => {
+                this.startNewGame();
+                console.log('✅ 已重置游戏');
+            }
+        };
+        
+        console.log('🔧 可用调试命令:');
+        console.log('  debug.status() - 查看游戏状态');
+        console.log('  debug.forcePlayerTurn() - 强制玩家回合');
+        console.log('  debug.skipDealAnimation() - 跳过发牌动画');
+        console.log('  debug.autoPlay(5) - 自动出牌 5 次');
+        console.log('  debug.reset() - 重置游戏');
+        console.log('  window.game - 访问游戏实例');
     }
 }
 

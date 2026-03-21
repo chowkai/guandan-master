@@ -23,6 +23,11 @@
 
     <!-- 游戏主容器 -->
     <div id="game-container" style="display: none;">
+        <!-- 出牌提示条 -->
+        <div id="turn-indicator" class="turn-indicator">
+            <span id="turn-message">准备开始</span>
+        </div>
+
         <!-- 顶部信息栏 -->
         <header id="game-header">
             <div class="header-left">
@@ -200,6 +205,45 @@
                 
                 <h3>特殊规则</h3>
                 <p><strong>级牌（逢人配）</strong>: 当前打几，几就是级牌，可当任意牌使用</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 贡牌面板 -->
+    <div id="tribute-panel" class="modal-panel">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tribute-title">贡牌阶段</h2>
+            </div>
+            <div class="modal-body tribute-content">
+                <div id="tribute-message" class="tribute-message"></div>
+                <div id="tribute-info" class="tribute-info"></div>
+                
+                <!-- 进贡牌选择 -->
+                <div id="tribute-select-section" class="tribute-select-section" style="display: none;">
+                    <p class="tribute-instruction">请选择要进贡的牌：</p>
+                    <div id="tribute-cards-container" class="tribute-cards-container"></div>
+                    <div class="tribute-actions">
+                        <button id="btn-tribute-auto" class="action-btn btn-secondary">自动选牌</button>
+                        <button id="btn-tribute-confirm" class="action-btn btn-primary" disabled>确认进贡</button>
+                    </div>
+                </div>
+                
+                <!-- 还贡牌选择 -->
+                <div id="return-select-section" class="tribute-select-section" style="display: none;">
+                    <p class="tribute-instruction">请选择要还贡的牌（≤10）：</p>
+                    <div id="return-cards-container" class="tribute-cards-container"></div>
+                    <div class="tribute-actions">
+                        <button id="btn-return-auto" class="action-btn btn-secondary">自动选牌</button>
+                        <button id="btn-return-confirm" class="action-btn btn-primary" disabled>确认还贡</button>
+                    </div>
+                </div>
+                
+                <!-- 抗贡提示 -->
+                <div id="resist-section" class="resist-section" style="display: none;">
+                    <p class="resist-message">🎉 抗贡成功！跳过贡牌阶段</p>
+                    <button id="btn-resist-ok" class="action-btn btn-primary">确定</button>
+                </div>
             </div>
         </div>
     </div>

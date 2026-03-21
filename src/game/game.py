@@ -15,6 +15,7 @@
 创建日期：2026-03-20
 """
 
+import random
 from typing import List, Optional, Tuple, Dict
 from enum import Enum
 from .cards import Card, CardCollection, CardRank
@@ -29,9 +30,20 @@ class GamePhase(Enum):
     """
     NOT_STARTED = "not_started"     # 未开始
     DEALING = "dealing"             # 发牌中
+    TRIBUTE = "tribute"             # 贡牌阶段
     PLAYING = "playing"             # 游戏中
     ROUND_END = "round_end"         # 一轮结束
     GAME_END = "game_end"           # 游戏结束
+
+
+class TributeType(Enum):
+    """
+    贡牌类型枚举
+    """
+    NONE = "none"           # 无贡牌
+    SINGLE = "single"       # 单贡
+    DOUBLE = "double"       # 双贡
+    RESIST = "resist"       # 抗贡
 
 
 class GameResult:
@@ -83,6 +95,13 @@ class GameState:
         self.pass_count = 0
         self.finish_order: List[int] = []  # 按顺序记录出完牌的玩家 ID
         self.round_winner: Optional[int] = None  # 本轮赢家
+        
+        # 贡牌阶段状态
+        self.tribute_type: TributeType = TributeType.NONE
+        self.tribute_giver: Optional[int] = None  # 进贡者
+        self.tribute_receiver: Optional[int] = None  # 受贡者
+        self.tribute_card: Optional[Card] = None  # 进贡牌
+        self.return_card: Optional[Card] = None  # 还贡牌
     
     def reset_round(self):
         """重置一轮的状态"""
@@ -90,6 +109,14 @@ class GameState:
         self.last_played_player = None
         self.pass_count = 0
         self.round_winner = None
+    
+    def reset_tribute(self):
+        """重置贡牌阶段状态"""
+        self.tribute_type = TributeType.NONE
+        self.tribute_giver = None
+        self.tribute_receiver = None
+        self.tribute_card = None
+        self.return_card = None
 
 
 class GuandanGame:
@@ -127,6 +154,10 @@ class GuandanGame:
         
         # 出牌历史
         self.play_history: List[Dict] = []
+        
+        # 首出玩家（用于后续局）
+        self.first_player = 0
+        self.winner_position = None  # 上局头游位置
     
     def start_game(self):
         """开始游戏"""
@@ -156,13 +187,148 @@ class GuandanGame:
         for i, hand in enumerate(hands):
             self.player_manager.players[i].receive_cards(hand.cards)
         
+        # 检查是否需要贡牌（不是第一局）
+        if self.winner_position is not None:
+            self.state.phase = GamePhase.TRIBUTE
+            self.execute_tribute_phase()
+            # 贡牌阶段已经设置了 first_player，不需要再设置
+        
         self.state.phase = GamePhase.PLAYING
         
-        # 确定先手（简化：玩家 0 先手）
-        self.state.current_player_id = 0
+        # 新游戏开始时随机指定一家先出牌
+        # 如果贡牌阶段已经设置了 first_player，使用贡牌阶段的结果
+        if not hasattr(self, '_tribute_set_first_player') or not self._tribute_set_first_player:
+            if self.winner_position is not None:
+                self.first_player = self.winner_position
+            else:
+                self.first_player = random.randint(0, 3)
         
-        print("发牌完成！\n")
+        self.state.current_player_id = self.first_player
+        
+        print(f"发牌完成！{self.player_manager.get_player(self.first_player).name} 先出牌\n")
         self.display_all_hands()
+    
+    def execute_tribute_phase(self):
+        """
+        执行贡牌阶段
+        
+        贡牌规则：
+        1. 判断贡牌类型（单贡/双贡/抗贡）
+        2. 确定进贡者和受贡者
+        3. 选择进贡牌（最大单牌，排除红心级牌）
+        4. 执行进贡
+        5. 受贡方还贡（≤10 的牌）
+        6. 确定出牌权（重要！正常贡牌后由进贡方先出，抗贡由头家先出）
+        """
+        print(f"\n{'='*60}")
+        print("贡牌阶段")
+        print(f"{'='*60}\n")
+        
+        # 获取上局排名
+        rank_map = {player_id: rank for player_id, rank in self.game_result.rankings}
+        
+        # 获取各名次玩家
+        player_by_rank = {}
+        for player_id, rank in rank_map.items():
+            player_by_rank[rank] = self.player_manager.get_player(player_id)
+        
+        head_you = player_by_rank.get(1)  # 头游
+        er_you = player_by_rank.get(2)    # 二游
+        san_you = player_by_rank.get(3)   # 三游
+        mo_you = player_by_rank.get(4)    # 末游
+        
+        if not all([head_you, er_you, san_you, mo_you]):
+            print("排名信息不完整，跳过贡牌阶段")
+            return
+        
+        # 判断贡牌类型
+        # 单贡：末游 → 头游
+        # 双贡：三游、末游 → 头游、二游
+        # 抗贡：有 2 个大王
+        
+        # 检查单贡抗贡（末游有 2 个大王）
+        if mo_you.get_big_joker_count() >= 2:
+            print(f"抗贡！{mo_you.name} 有{mo_you.get_big_joker_count()}个大王，跳过贡牌")
+            self.state.tribute_type = TributeType.RESIST
+            # 抗贡：上局头家直接出牌
+            self.first_player = head_you.player_id
+            self._tribute_set_first_player = True
+            return
+        
+        # 检查是否双贡（头游和二游是队友，三游和末游是队友）
+        is_double = (head_you.team == er_you.team) and (san_you.team == mo_you.team)
+        
+        if is_double:
+            # 双贡：检查两家共有 2 个大王
+            total_kings = san_you.get_big_joker_count() + mo_you.get_big_joker_count()
+            if total_kings >= 2:
+                print(f"抗贡！三游和末游共有{total_kings}个大王，跳过贡牌")
+                self.state.tribute_type = TributeType.RESIST
+                self.first_player = head_you.player_id
+                self._tribute_set_first_player = True
+                return
+            
+            # 执行双贡
+            self.state.tribute_type = TributeType.DOUBLE
+            print("双贡：三游和末游向头游和二游进贡\n")
+            
+            # 三游进贡给头游
+            self._execute_single_tribute(san_you, head_you)
+            
+            # 末游进贡给二游
+            self._execute_single_tribute(mo_you, er_you)
+            
+            # 双贡后，由进贡方（三游，给头游进贡的）先出牌
+            self.first_player = san_you.player_id
+            self._tribute_set_first_player = True
+            print(f"\n贡牌结束，{san_you.name}（进贡方）获得出牌权\n")
+        else:
+            # 单贡
+            self.state.tribute_type = TributeType.SINGLE
+            print(f"单贡：{mo_you.name} → {head_you.name}\n")
+            
+            # 末游进贡给头游
+            self._execute_single_tribute(mo_you, head_you)
+            
+            # 单贡后，由进贡方（末游）先出牌
+            self.first_player = mo_you.player_id
+            self._tribute_set_first_player = True
+            print(f"\n贡牌结束，{mo_you.name}（进贡方）获得出牌权\n")
+    
+    def _execute_single_tribute(self, giver: Player, receiver: Player):
+        """
+        执行单次进贡
+        
+        Args:
+            giver: 进贡方
+            receiver: 受贡方
+        """
+        print(f"{giver.name} 向 {receiver.name} 进贡")
+        
+        # 选择进贡牌（最大单牌，排除红心级牌）
+        tribute_card = giver.select_tribute_card(self.level)
+        if not tribute_card:
+            print(f"  {giver.name} 没有牌可进贡")
+            return
+        
+        print(f"  进贡牌：{tribute_card}")
+        
+        # 执行进贡
+        giver.hand.remove(tribute_card)
+        receiver.hand.add(tribute_card)
+        receiver.hand.sort()
+        
+        # 还贡
+        return_card = receiver.select_return_card(self.level)
+        if return_card:
+            print(f"  还贡牌：{return_card}")
+            receiver.hand.remove(return_card)
+            giver.hand.add(return_card)
+            giver.hand.sort()
+        else:
+            print(f"  {receiver.name} 没有≤10 的牌可还贡")
+        
+        print()
     
     def display_all_hands(self):
         """显示所有玩家的手牌（用于调试）"""
@@ -332,6 +498,12 @@ class GuandanGame:
             if player.finish_order is None:
                 player.set_finish_order(4)
                 self.game_result.rankings.append((player.player_id, 4))
+                break
+        
+        # 记录上局头游位置（用于下一局先手）
+        for player_id, rank in self.game_result.rankings:
+            if rank == 1:
+                self.winner_position = player_id
                 break
         
         # 计算胜负

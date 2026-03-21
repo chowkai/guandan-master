@@ -271,6 +271,106 @@ class Player:
         """
         return [(self.player_id + 1) % 4, (self.player_id + 3) % 4]
     
+    def get_big_joker_count(self) -> int:
+        """
+        获取手牌中大王的数量
+        
+        Returns:
+            大王数量
+        """
+        from .cards import CardRank
+        return sum(1 for card in self.hand if card.rank == CardRank.BIG_JOKER)
+    
+    def select_tribute_card(self, level: int) -> Optional[Card]:
+        """
+        选择进贡牌（手牌中最大单牌，排除红心级牌）
+        
+        规则：
+        - 选择手牌中最大的单牌
+        - 如果是红心级牌，用次大牌
+        - 有两张最大牌，选第一张
+        
+        Args:
+            level: 当前级数（用于判断红心级牌）
+            
+        Returns:
+            进贡牌
+        """
+        from .cards import Suit
+        if len(self.hand) == 0:
+            return None
+        
+        # 获取排序后的手牌（从大到小）
+        sorted_hand = self.get_sorted_hand()
+        
+        # 首先检查是否有两张相同的最大牌（对子），自动选第一张
+        if len(sorted_hand) >= 2:
+            # 检查前两张是否相同牌面值
+            if sorted_hand[0].rank.value == sorted_hand[1].rank.value:
+                # 检查第一张是否是红心级牌
+                is_red_heart = (sorted_hand[0].is_level_card and sorted_hand[0].suit == Suit.HEARTS)
+                if not is_red_heart:
+                    return sorted_hand[0]
+                # 如果第一张是红心级，检查第二张
+                is_red_heart_2 = (sorted_hand[1].is_level_card and sorted_hand[1].suit == Suit.HEARTS)
+                if not is_red_heart_2:
+                    return sorted_hand[1]
+        
+        # 找到最大的非红心级牌
+        for card in sorted_hand:
+            # 检查是否是红心级牌
+            is_red_heart_level = (card.is_level_card and card.suit == Suit.HEARTS)
+            if not is_red_heart_level:
+                return card
+        
+        # 如果所有牌都是红心级牌（极端情况），返回第一张
+        return sorted_hand[0] if sorted_hand else None
+    
+    def select_return_card(self, level: int) -> Optional[Card]:
+        """
+        选择还贡牌（≤10 的牌，AI 自动选择最小的）
+        
+        规则：
+        - 选择手牌中≤10 的牌
+        - AI 自动选择最小的≤10 的牌
+        
+        Args:
+            level: 当前级数
+            
+        Returns:
+            还贡牌
+        """
+        from .cards import CardRank
+        if len(self.hand) == 0:
+            return None
+        
+        # 找到所有≤10 的牌
+        valid_cards = [card for card in self.hand 
+                      if card.rank.value <= CardRank.TEN.value]
+        
+        if not valid_cards:
+            return None
+        
+        # 返回最小的牌（排序后取最后一个）
+        valid_cards.sort(key=lambda c: c._compare_value(), reverse=False)
+        return valid_cards[0]
+    
+    def can_resist_tribute(self, required_kings: int = 2) -> bool:
+        """
+        判断是否可以抗贡
+        
+        规则：
+        - 单贡：有 2 个大王 → 抗贡
+        - 双贡：两家共有 2 个大王 → 抗贡
+        
+        Args:
+            required_kings: 需要的大王数量（默认 2）
+            
+        Returns:
+            是否可以抗贡
+        """
+        return self.get_big_joker_count() >= required_kings
+    
     def __str__(self):
         """返回玩家的字符串表示"""
         status_map = {

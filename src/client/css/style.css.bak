@@ -533,7 +533,7 @@ html, body {
     color: var(--china-red-dark);
 }
 
-/* 卡牌样式 - 极简设计 v1.4 */
+/* 卡牌样式 - 简洁设计 v1.3 (修正版) */
 .card {
     width: var(--card-width);
     height: var(--card-height);
@@ -551,8 +551,14 @@ html, body {
     box-shadow: var(--shadow-lg), 0 0 0 1px var(--gold-light);
 }
 
-/* 左上角：牌字 + 小花色（横排） */
-/* 左上角：竖排牌字 + 小花色 */
+/* 卡牌内容容器 */
+.card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 左上角：竖排牌字 + 小花色 v1.3 */
 .card-value-top {
     position: absolute;
     top: 8px;
@@ -562,8 +568,15 @@ html, body {
     writing-mode: vertical-rl;  /* 竖排 */
     text-orientation: mixed;
     display: flex;
+    flex-direction: column;
     gap: 2px;
     letter-spacing: 1px;
+    line-height: 1;
+}
+
+/* 牌字竖排 */
+.card-value-top .rank {
+    font-weight: bold;
 }
 
 /* 花色跟随牌字竖排 */
@@ -579,6 +592,18 @@ html, body {
     transform: translate(-50%, -50%);
     font-size: 80px;
     line-height: 1;
+}
+
+/* 右下角：倒置牌字 + 花色 */
+.card-corner-bottom {
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    transform: rotate(180deg);
 }
 
 .card svg {
@@ -601,10 +626,25 @@ html, body {
     background: linear-gradient(135deg, #fff5e6, #ffe6cc);
 }
 
+/* 大小王竖排 JOKER */
 .card-joker .card-value-top {
-    font-size: 16px;
-    letter-spacing: 3px;
-    color: #c0392b;
+    font-size: 18px;
+    font-weight: bold;
+    writing-mode: vertical-rl;  /* 竖排 */
+    text-orientation: mixed;
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    letter-spacing: 2px;
+    color: #c0392b;  /* 红色 */
+}
+
+.card-joker .card-suit-center {
+    font-size: 60px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .card-joker-small .card-value-top,

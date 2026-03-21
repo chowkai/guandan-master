@@ -344,6 +344,144 @@ class AnimationManager {
             await anim();
         }
     }
+    
+    /**
+     * 贡牌动画 - 进贡牌从进贡方飞出到受贡方
+     * 
+     * @param {HTMLElement} fromElement - 进贡方手牌区域
+     * @param {HTMLElement} toElement - 受贡方手牌区域
+     * @param {Object} cardData - 卡牌数据 {suit, rank, isLevelCard}
+     * @param {Function} onComplete - 完成回调
+     */
+    tributeAnimation(fromElement, toElement, cardData, onComplete) {
+        if (!this.enabled) {
+            if (onComplete) onComplete();
+            return;
+        }
+        
+        // 创建临时卡牌元素用于动画
+        const tempCard = document.createElement('div');
+        tempCard.className = 'card';
+        tempCard.style.position = 'fixed';
+        tempCard.style.zIndex = '9999';
+        tempCard.style.width = '80px';
+        tempCard.style.height = '112px';
+        tempCard.style.transition = 'all 0.8s ease-in-out';
+        tempCard.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
+        
+        // 设置卡牌内容
+        let svgPath;
+        if (cardData.suit === 'joker') {
+            svgPath = cardData.rank === 15 ? 
+                'assets/images/cards/joker_small.svg' : 
+                'assets/images/cards/joker_big.svg';
+        } else {
+            const rankName = cardData.rank === 10 ? '10' : 
+                            cardData.rank === 11 ? 'J' :
+                            cardData.rank === 12 ? 'Q' :
+                            cardData.rank === 13 ? 'K' :
+                            cardData.rank === 14 ? 'A' :
+                            cardData.rank.toString();
+            svgPath = `assets/images/cards/${cardData.suit}_${rankName}.svg`;
+        }
+        tempCard.innerHTML = `<img src="${svgPath}" style="width:100%;height:100%;object-fit:contain;">`;
+        
+        // 初始位置 - 进贡方区域中心
+        const fromRect = fromElement.getBoundingClientRect();
+        tempCard.style.left = (fromRect.left + fromRect.width / 2 - 40) + 'px';
+        tempCard.style.top = (fromRect.top + fromRect.height / 2 - 56) + 'px';
+        
+        document.body.appendChild(tempCard);
+        
+        // 强制重绘
+        tempCard.offsetHeight;
+        
+        // 目标位置 - 受贡方区域中心
+        const toRect = toElement.getBoundingClientRect();
+        const targetLeft = toRect.left + toRect.width / 2 - 40;
+        const targetTop = toRect.top + toRect.height / 2 - 56;
+        
+        // 动画到目标位置
+        tempCard.style.left = targetLeft + 'px';
+        tempCard.style.top = targetTop + 'px';
+        tempCard.style.transform = 'scale(1.2) rotate(360deg)';
+        tempCard.style.opacity = '1';
+        
+        // 动画结束
+        setTimeout(() => {
+            tempCard.remove();
+            if (onComplete) onComplete();
+        }, 800);
+    }
+    
+    /**
+     * 还贡动画 - 还贡牌从受贡方飞出到进贡方
+     * 
+     * @param {HTMLElement} fromElement - 受贡方手牌区域
+     * @param {HTMLElement} toElement - 进贡方手牌区域
+     * @param {Object} cardData - 卡牌数据 {suit, rank, isLevelCard}
+     * @param {Function} onComplete - 完成回调
+     */
+    returnTributeAnimation(fromElement, toElement, cardData, onComplete) {
+        if (!this.enabled) {
+            if (onComplete) onComplete();
+            return;
+        }
+        
+        // 创建临时卡牌元素用于动画
+        const tempCard = document.createElement('div');
+        tempCard.className = 'card';
+        tempCard.style.position = 'fixed';
+        tempCard.style.zIndex = '9999';
+        tempCard.style.width = '80px';
+        tempCard.style.height = '112px';
+        tempCard.style.transition = 'all 0.8s ease-in-out';
+        tempCard.style.boxShadow = '0 0 20px rgba(196, 30, 58, 0.8)';
+        
+        // 设置卡牌内容
+        let svgPath;
+        if (cardData.suit === 'joker') {
+            svgPath = cardData.rank === 15 ? 
+                'assets/images/cards/joker_small.svg' : 
+                'assets/images/cards/joker_big.svg';
+        } else {
+            const rankName = cardData.rank === 10 ? '10' : 
+                            cardData.rank === 11 ? 'J' :
+                            cardData.rank === 12 ? 'Q' :
+                            cardData.rank === 13 ? 'K' :
+                            cardData.rank === 14 ? 'A' :
+                            cardData.rank.toString();
+            svgPath = `assets/images/cards/${cardData.suit}_${rankName}.svg`;
+        }
+        tempCard.innerHTML = `<img src="${svgPath}" style="width:100%;height:100%;object-fit:contain;">`;
+        
+        // 初始位置 - 受贡方区域中心
+        const fromRect = fromElement.getBoundingClientRect();
+        tempCard.style.left = (fromRect.left + fromRect.width / 2 - 40) + 'px';
+        tempCard.style.top = (fromRect.top + fromRect.height / 2 - 56) + 'px';
+        
+        document.body.appendChild(tempCard);
+        
+        // 强制重绘
+        tempCard.offsetHeight;
+        
+        // 目标位置 - 进贡方区域中心
+        const toRect = toElement.getBoundingClientRect();
+        const targetLeft = toRect.left + toRect.width / 2 - 40;
+        const targetTop = toRect.top + toRect.height / 2 - 56;
+        
+        // 动画到目标位置
+        tempCard.style.left = targetLeft + 'px';
+        tempCard.style.top = targetTop + 'px';
+        tempCard.style.transform = 'scale(1.2) rotate(-360deg)';
+        tempCard.style.opacity = '1';
+        
+        // 动画结束
+        setTimeout(() => {
+            tempCard.remove();
+            if (onComplete) onComplete();
+        }, 800);
+    }
 }
 
 // ========================================
@@ -518,6 +656,187 @@ class CardEffects {
         return new Promise(resolve => {
             setTimeout(resolve, duration);
         });
+    }
+    
+    /**
+     * 贡牌动画 - 显示进贡/还贡过程
+     * @param {Object} options - 动画选项
+     * @param {string} options.fromPosition - 进贡方位置 ('bottom', 'top', 'left', 'right')
+     * @param {string} options.toPosition - 受贡方位置
+     * @param {Object} options.tributeCard - 进贡牌数据
+     * @param {Object} options.returnCard - 还贡牌数据（可选）
+     * @param {Function} options.onComplete - 动画完成回调
+     */
+    async tributeAnimation(options) {
+        const { fromPosition, toPosition, tributeCard, returnCard, onComplete } = options;
+        
+        if (!this.enabled) {
+            if (onComplete) onComplete();
+            return;
+        }
+        
+        const fromElement = document.getElementById(`player-${fromPosition}`);
+        const toElement = document.getElementById(`player-${toPosition}`);
+        
+        if (!fromElement || !toElement) {
+            if (onComplete) onComplete();
+            return;
+        }
+        
+        // 1. 创建进贡牌显示
+        const tributeEl = this.createTributeCardElement(tributeCard);
+        const fromRect = fromElement.getBoundingClientRect();
+        tributeEl.style.left = (fromRect.left + fromRect.width / 2 - 30) + 'px';
+        tributeEl.style.top = (fromRect.top + fromRect.height / 2 - 42) + 'px';
+        document.body.appendChild(tributeEl);
+        
+        // 2. 动画飞到受贡方
+        const toRect = toElement.getBoundingClientRect();
+        const targetLeft = toRect.left + toRect.width / 2 - 30;
+        const targetTop = toRect.top + toRect.height / 2 - 42;
+        
+        // 强制重绘
+        tributeEl.offsetHeight;
+        
+        tributeEl.style.transition = 'all 0.8s ease-in-out';
+        tributeEl.style.left = targetLeft + 'px';
+        tributeEl.style.top = targetTop + 'px';
+        tributeEl.style.transform = 'scale(1.2) rotate(360deg)';
+        
+        // 3. 显示进贡牌信息
+        await this.sleep(400);
+        this.showTributeMessage(`进贡：${this.getCardName(tributeCard)}`);
+        
+        await this.sleep(400);
+        
+        // 4. 移除进贡牌
+        tributeEl.style.opacity = '0';
+        await this.sleep(200);
+        tributeEl.remove();
+        
+        // 5. 如果有还贡牌
+        if (returnCard) {
+            await this.sleep(300);
+            
+            // 创建还贡牌
+            const returnEl = this.createTributeCardElement(returnCard);
+            returnEl.style.left = (toRect.left + toRect.width / 2 - 30) + 'px';
+            returnEl.style.top = (toRect.top + toRect.height / 2 - 42) + 'px';
+            document.body.appendChild(returnEl);
+            
+            // 强制重绘
+            returnEl.offsetHeight;
+            
+            // 飞回进贡方
+            returnEl.style.transition = 'all 0.8s ease-in-out';
+            returnEl.style.left = (fromRect.left + fromRect.width / 2 - 30) + 'px';
+            returnEl.style.top = (fromRect.top + fromRect.height / 2 - 42) + 'px';
+            returnEl.style.transform = 'scale(1.2) rotate(-360deg)';
+            
+            // 显示还贡牌信息
+            await this.sleep(400);
+            this.showTributeMessage(`还贡：${this.getCardName(returnCard)}`);
+            
+            await this.sleep(600);
+            returnEl.style.opacity = '0';
+            await this.sleep(200);
+            returnEl.remove();
+        }
+        
+        // 6. 完成
+        await this.sleep(300);
+        this.hideTributeMessage();
+        
+        if (onComplete) onComplete();
+    }
+    
+    /**
+     * 创建贡牌显示元素
+     */
+    createTributeCardElement(cardData) {
+        const card = document.createElement('div');
+        card.className = 'tribute-card-display';
+        card.style.cssText = `
+            position: fixed;
+            width: 60px;
+            height: 84px;
+            background: var(--bg-paper);
+            border-radius: 8px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        `;
+        
+        const isRed = cardData.suit === 'hearts' || cardData.suit === 'diamonds';
+        card.style.color = isRed ? 'var(--china-red)' : 'var(--text-dark)';
+        card.textContent = this.getCardName(cardData);
+        
+        return card;
+    }
+    
+    /**
+     * 获取牌的显示名称
+     */
+    getCardName(cardData) {
+        const rankMap = {
+            2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
+            7: '7', 8: '8', 9: '9', 10: '10',
+            11: 'J', 12: 'Q', 13: 'K', 14: 'A',
+            15: '小王', 16: '大王'
+        };
+        return rankMap[cardData.rank] || String(cardData.rank);
+    }
+    
+    /**
+     * 显示贡牌消息
+     */
+    showTributeMessage(message) {
+        let msgEl = document.getElementById('tribute-message-display');
+        if (!msgEl) {
+            msgEl = document.createElement('div');
+            msgEl.id = 'tribute-message-display';
+            msgEl.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: var(--gold);
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                z-index: 10001;
+                border: 2px solid var(--gold);
+            `;
+            document.body.appendChild(msgEl);
+        }
+        msgEl.textContent = message;
+        msgEl.style.opacity = '1';
+    }
+    
+    /**
+     * 隐藏贡牌消息
+     */
+    hideTributeMessage() {
+        const msgEl = document.getElementById('tribute-message-display');
+        if (msgEl) {
+            msgEl.style.opacity = '0';
+            setTimeout(() => msgEl.remove(), 300);
+        }
+    }
+    
+    /**
+     * 延时工具
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
