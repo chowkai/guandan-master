@@ -156,16 +156,32 @@ function createGameStore() {
       }))
       
       console.log('✅ 先手玩家已设置:', firstPlayer)
+      
+      // 如果是 AI 先手，立即出牌
+      if (firstPlayer !== 'bottom') {
+        setTimeout(() => {
+          this.aiPlay(firstPlayer)
+        }, 300)
+      }
     },
     
     // AI 自动出牌（快速响应）
     aiPlay(player) {
-      const hand = this.getState().players[player]
+      const state = this.getState()
+      const hand = state.players[player]
       if (!hand || hand.length === 0) return
+      
+      console.log('🤖 AI 出牌:', player)
       
       // 简单策略：出最小的单张
       const card = hand[hand.length - 1]
       this.playCards(player, [card])
+      
+      // 检查是否胜利
+      if (hand.length === 1) {
+        alert('🎉 ' + player + ' 赢了！')
+        return
+      }
       
       // 切换到下一回合（快速）
       setTimeout(() => {
