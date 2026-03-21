@@ -45,37 +45,35 @@
   
   <div class="card-center">
     {#if card.suit === 'joker'}
-      <span class="joker-icon">👑</span>
-      <span class="joker-label">{card.rank === 'big_joker' ? '大王' : '小王'}</span>
+      <div style="text-align: center;">
+        <span class="joker-icon">👑</span>
+        <br/>
+        <span class="joker-label">{card.rank === 'big_joker' ? '大王' : '小王'}</span>
+      </div>
     {:else}
       <span class="big-suit" style="color: {cardColor}">{cardIcon}</span>
     {/if}
-  </div>
-  
-  <div class="card-bottom">
-    <span class="card-rank">{card.rank}</span>
-    <span class="card-suit" style="color: {cardColor}">{cardIcon}</span>
   </div>
 </div>
 
 <style>
   .card {
-    width: 120px;
-    height: 168px;
-    background: white;
-    border: 3px solid;
-    border-radius: 10px;
+    width: 140px;
+    height: 210px;
+    background: linear-gradient(145deg, #fff, #f0f0f0);
+    border: 2px solid #333;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     position: relative;
-    margin-left: -60px;
+    margin-left: -70px;
     overflow: hidden;
-    aspect-ratio: 5 / 7;
+    aspect-ratio: 2 / 3;
   }
   
   .card:first-child {
@@ -83,65 +81,66 @@
   }
   
   .card:hover {
-    transform: translateY(-15px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    transform: translateY(-20px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
   }
   
   .card.selected {
-    transform: translateY(-25px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-    border-width: 4px;
+    transform: translateY(-30px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    border-width: 3px;
     border-color: gold !important;
   }
   
   .card.small {
-    width: 60px;
-    height: 87px;
-    margin-left: -25px;
+    width: 140px;
+    height: 210px;
+    margin-left: -35px;
   }
   
-  /* 牌字只放在左上角 */
+  /* 左上角牌字 */
   .card-top {
-    position: absolute;
-    top: 5px;
-    left: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 16px;
-    font-weight: bold;
     line-height: 1;
   }
   
-  /* 隐藏右下角牌字 */
+  .card-rank {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .card-suit {
+    font-size: 24px;
+  }
+  
   .card-bottom {
     display: none;
   }
   
-  .card.small .card-top {
-    font-size: 10px;
-  }
-  
+  /* 中心大花色 */
   .card-center {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 72px;
+    font-size: 96px;
+    opacity: 0.9;
   }
   
   .card.small .card-center {
-    font-size: 72px;
+    font-size: 96px;
   }
   
   .joker-icon {
-    font-size: 54px;
+    font-size: 72px;
   }
   
   .joker-label {
-    font-size: 12px;
+    font-size: 16px;
     color: #f39c12;
     font-weight: bold;
-    margin-top: 2px;
+    margin-top: 4px;
   }
   
   .card-top {
