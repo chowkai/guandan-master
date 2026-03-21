@@ -74,6 +74,7 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
     margin-left: -50px;
+    overflow: hidden;
   }
   
   .card:first-child {
@@ -98,7 +99,7 @@
     margin-left: -25px;
   }
   
-  /* 牌字放在左上角和右下角 */
+  /* 牌字只放在左上角 */
   .card-top {
     position: absolute;
     top: 5px;
@@ -111,20 +112,12 @@
     line-height: 1;
   }
   
+  /* 隐藏右下角牌字 */
   .card-bottom {
-    position: absolute;
-    bottom: 5px;
-    right: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1;
-    transform: rotate(180deg);
+    display: none;
   }
   
-  .card.small .card-top, .card.small .card-bottom {
+  .card.small .card-top {
     font-size: 10px;
   }
   
