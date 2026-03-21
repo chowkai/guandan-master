@@ -116,7 +116,7 @@ function createGameStore() {
       }
     },
     
-    // 发牌
+    // 发牌（每家 27 张，共 108 张）
     dealCards(deck: Card[]): Record<PlayerPosition, Card[]> {
       const hands: Record<PlayerPosition, Card[]> = {
         top: [],
@@ -126,11 +126,13 @@ function createGameStore() {
       }
       
       const positions: PlayerPosition[] = ['top', 'left', 'right', 'bottom']
+      const cardsPerPlayer = 27
+      const totalCards = cardsPerPlayer * 4 // 108 张
       
-      deck.forEach((card, index) => {
-        const pos = positions[index % 4]
-        hands[pos].push(card)
-      })
+      for (let i = 0; i < totalCards; i++) {
+        const pos = positions[i % 4]
+        hands[pos].push(deck[i])
+      }
       
       // 排序
       positions.forEach(pos => {
@@ -174,7 +176,7 @@ function createGameStore() {
       // 切换到下一回合
       setTimeout(() => {
         this.nextTurn()
-      }, 1000)
+      }, 500) // 缩短 AI 思考时间
     },
     
     // 获取当前状态
