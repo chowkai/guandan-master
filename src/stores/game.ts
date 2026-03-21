@@ -143,7 +143,7 @@ function createGameStore() {
       return hands
     },
     
-    // 设置先手玩家（核心修复！）
+    // 设置先手玩家
     setFirstPlayer() {
       const positions: PlayerPosition[] = ['top', 'left', 'right', 'bottom']
       const randomIndex = Math.floor(Math.random() * 4)
@@ -156,16 +156,8 @@ function createGameStore() {
       }))
       
       console.log('✅ 先手玩家已设置:', firstPlayer)
-      
-      // 如果是 AI 先手，自动出牌
-      if (firstPlayer !== 'bottom') {
-        setTimeout(() => {
-          this.aiPlay(firstPlayer)
-        }, 500) // 缩短等待时间
-      }
-    },
     
-    // AI 自动出牌（简单版）
+    // AI 自动出牌（快速响应）
     aiPlay(player: PlayerPosition) {
       const hand = this.getState().players[player]
       if (!hand || hand.length === 0) return
@@ -174,10 +166,10 @@ function createGameStore() {
       const card = hand[hand.length - 1]
       this.playCards(player, [card])
       
-      // 切换到下一回合
+      // 切换到下一回合（快速）
       setTimeout(() => {
         this.nextTurn()
-      }, 500) // 缩短 AI 思考时间
+      }, 300)
     },
     
     // 获取当前状态

@@ -53,10 +53,10 @@
       return
     }
     
-    // 切换到下一回合
+    // 切换到下一回合（AI 立即出牌）
     setTimeout(() => {
       game.nextTurn()
-    }, 1000)
+    }, 300)
   }
   
   function pass() {
@@ -91,12 +91,49 @@
     </div>
   </div>
   
-  <!-- 中央出牌区 -->
+  <!-- 中央出牌区 - 显示每家出牌 -->
   <div class="center-area">
-    {#if $game.lastHand}
-      <div class="last-hand">
-        <div class="last-hand-label">最后出牌</div>
-        <div class="last-hand-cards">
+    <!-- 对家出牌区 -->
+    {#if $game.lastHand && $game.lastHand.player === 'top'}
+      <div class="played-area top">
+        <div class="played-label">对家</div>
+        <div class="played-cards">
+          {#each $game.lastHand.cards as card}
+            <Card {card} small />
+          {/each}
+        </div>
+      </div>
+    {/if}
+    
+    <!-- 左家出牌区 -->
+    {#if $game.lastHand && $game.lastHand.player === 'left'}
+      <div class="played-area left">
+        <div class="played-label">左家</div>
+        <div class="played-cards">
+          {#each $game.lastHand.cards as card}
+            <Card {card} small />
+          {/each}
+        </div>
+      </div>
+    {/if}
+    
+    <!-- 右家出牌区 -->
+    {#if $game.lastHand && $game.lastHand.player === 'right'}
+      <div class="played-area right">
+        <div class="played-label">右家</div>
+        <div class="played-cards">
+          {#each $game.lastHand.cards as card}
+            <Card {card} small />
+          {/each}
+        </div>
+      </div>
+    {/if}
+    
+    <!-- 玩家出牌区 -->
+    {#if $game.lastHand && $game.lastHand.player === 'bottom'}
+      <div class="played-area bottom">
+        <div class="played-label">我</div>
+        <div class="played-cards">
           {#each $game.lastHand.cards as card}
             <Card {card} small />
           {/each}
@@ -176,11 +213,44 @@
   
   .center-area {
     grid-area: center;
+    position: relative;
+    display: grid;
+    grid-template-areas:
+      ". top ."
+      "left center right"
+      ". bottom .";
+    grid-template-columns: 1fr 1.5fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .played-area {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    min-height: 120px;
+  }
+  
+  .played-area.top { grid-area: top; }
+  .played-area.left { grid-area: left; }
+  .played-area.right { grid-area: right; }
+  .played-area.bottom { grid-area: bottom; }
+  
+  .played-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+  }
+  
+  .played-cards {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .level-display {
@@ -194,6 +264,7 @@
     padding: 15px 30px;
     border-radius: 20px;
     border: 2px solid gold;
+    z-index: 100;
   }
   
   .level-info, .game-info {

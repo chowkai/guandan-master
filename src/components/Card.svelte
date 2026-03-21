@@ -67,8 +67,8 @@
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 8px;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
@@ -96,20 +96,36 @@
     width: 60px;
     height: 87px;
     margin-left: -25px;
-    padding: 5px;
   }
   
-  .card-top, .card-bottom {
+  /* 牌字放在左上角和右下角 */
+  .card-top {
+    position: absolute;
+    top: 5px;
+    left: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     line-height: 1;
   }
   
+  .card-bottom {
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    transform: rotate(180deg);
+  }
+  
   .card.small .card-top, .card.small .card-bottom {
-    font-size: 12px;
+    font-size: 10px;
   }
   
   .card-center {
@@ -128,8 +144,9 @@
   }
   
   .joker-label {
-    font-size: 11px;
+    font-size: 10px;
     color: #f39c12;
     font-weight: bold;
+    margin-top: 2px;
   }
 </style>
