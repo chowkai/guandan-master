@@ -3,14 +3,14 @@
   
   export let position
   
-  const playerNames: Record<PlayerPosition, string> = {
+  const playerNames = {
     top: '对家',
     left: 'AI 左',
     right: 'AI 右',
     bottom: '我'
   }
   
-  const avatars: Record<PlayerPosition, string> = {
+  const avatars = {
     top: '🧑‍💻',
     left: '🤖',
     right: '🤖',
