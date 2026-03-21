@@ -158,7 +158,7 @@ function createGameStore() {
       console.log('✅ 先手玩家已设置:', firstPlayer)
     
     // AI 自动出牌（快速响应）
-    aiPlay(player: PlayerPosition) {
+    aiPlay(player) {
       const hand = this.getState().players[player]
       if (!hand || hand.length === 0) return
       
