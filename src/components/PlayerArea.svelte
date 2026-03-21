@@ -26,7 +26,6 @@
     <div class="player-avatar">{avatars[position]}</div>
     <div class="player-name">{playerNames[position]}</div>
     <div class="player-status">
-      <span class="card-count">剩余：{handSize}张</span>
       {#if isCurrentTurn}
         <span class="thinking-badge">思考中...</span>
       {/if}

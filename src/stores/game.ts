@@ -42,7 +42,8 @@ function createGameStore() {
     },
     currentTurn: null,
     gameStatus: 'ready',
-    level: 2,
+    currentLevel: 2,  // 从打 2 开始
+    currentPlayer: 1, // 第 1 局
     lastHand: null,
     winner: null
   }
@@ -160,7 +161,7 @@ function createGameStore() {
       if (firstPlayer !== 'bottom') {
         setTimeout(() => {
           this.aiPlay(firstPlayer)
-        }, 1500)
+        }, 500) // 缩短等待时间
       }
     },
     

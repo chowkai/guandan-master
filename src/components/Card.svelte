@@ -60,20 +60,20 @@
 
 <style>
   .card {
-    width: 80px;
-    height: 112px;
+    width: 100px;
+    height: 145px;
     background: white;
     border: 3px solid;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
-    margin-left: -40px;
+    margin-left: -50px;
   }
   
   .card:first-child {
@@ -93,34 +93,43 @@
   }
   
   .card.small {
-    width: 50px;
-    height: 70px;
-    margin-left: -20px;
+    width: 60px;
+    height: 87px;
+    margin-left: -25px;
+    padding: 5px;
+  }
+  
+  .card-top, .card-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+  }
+  
+  .card.small .card-top, .card.small .card-bottom {
+    font-size: 12px;
   }
   
   .card-center {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 56px;
+    font-size: 64px;
   }
   
   .card.small .card-center {
-    font-size: 36px;
+    font-size: 42px;
   }
   
   .joker-icon {
-    font-size: 40px;
+    font-size: 48px;
   }
   
   .joker-label {
-    font-size: 10px;
+    font-size: 11px;
     color: #f39c12;
     font-weight: bold;
-  }
-  
-  /* 隐藏牌面数字 */
-  .card-top, .card-bottom {
-    display: none;
   }
 </style>

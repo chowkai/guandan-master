@@ -78,6 +78,19 @@
   <!-- 右侧玩家 -->
   <PlayerArea position="right" />
   
+  <!-- 级数显示 -->
+  <div class="level-display">
+    <div class="level-info">
+      <span class="level-label">当前级数</span>
+      <span class="level-value">{$game.currentLevel}</span>
+    </div>
+    <div class="game-info">
+      <span class="game-label">第</span>
+      <span class="game-value">{$game.currentPlayer}</span>
+      <span class="game-label">局</span>
+    </div>
+  </div>
+  
   <!-- 中央出牌区 -->
   <div class="center-area">
     {#if $game.lastHand}
@@ -94,26 +107,19 @@
   
   <!-- 玩家手牌区 -->
   <div class="player-hand-area">
-    <div class="hand-controls">
-      <button class="btn-sort" on:click={() => {}}>🌸 排序</button>
-      <button class="btn-sort" on:click={() => {}}>🔢 数字</button>
-      <button class="btn-hint" on:click={() => {}}>💡 提示</button>
-    </div>
-    
-    <div class="my-hand">
-      {#each $game.players.bottom as card, i (i)}
-        <Card 
-          {card} 
-          selected={selectedCards.includes(card)}
-          on:toggle={() => toggleCard(card)}
-        />
-      {/each}
-    </div>
-    
-    <div class="action-buttons">
+    <!-- 操作栏 -->
+    <div class="action-bar">
       {#if errorMsg}
         <div class="error-message">{errorMsg}</div>
       {/if}
+      
+      <button 
+        class="btn-clear" 
+        disabled={selectedCards.length === 0}
+        on:click={() => selectedCards = []}
+      >
+        🔄 重选
+      </button>
       
       <button 
         class="btn-play" 
@@ -129,6 +135,23 @@
       >
         不要
       </button>
+    </div>
+    
+    <div class="my-hand">
+      {#each $game.players.bottom as card, i (i)}
+        <Card 
+          {card} 
+          selected={selectedCards.includes(card)}
+          on:toggle={() => toggleCard(card)}
+        />
+      {/each}
+    </div>
+    
+    <!-- 不显眼的控制按钮 -->
+    <div class="hand-controls">
+      <button class="btn-sort" on:click={() => {}}>🌸</button>
+      <button class="btn-sort" on:click={() => {}}>🔢</button>
+      <button class="btn-hint" on:click={() => {}}>💡</button>
     </div>
   </div>
 </div>
@@ -154,8 +177,41 @@
   .center-area {
     grid-area: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 20px;
+  }
+  
+  .level-display {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 30px;
+    background: rgba(0,0,0,0.6);
+    padding: 15px 30px;
+    border-radius: 20px;
+    border: 2px solid gold;
+  }
+  
+  .level-info, .game-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-size: 18px;
+  }
+  
+  .level-label, .game-label {
+    opacity: 0.8;
+  }
+  
+  .level-value, .game-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: gold;
   }
   
   .last-hand {
@@ -183,25 +239,90 @@
     padding: 20px;
   }
   
-  .hand-controls {
+  .action-bar {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 15px 30px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 25px;
+  }
+  
+  .error-message {
+    color: #ff6b6b;
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.95);
+    padding: 10px 25px;
+    border-radius: 15px;
+    animation: pulse 0.5s ease-in-out;
+    min-width: 120px;
+    text-align: center;
+  }
+  
+  .btn-play, .btn-pass, .btn-clear {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .btn-play {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+  }
+  
+  .btn-play:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-pass {
+    background: linear-gradient(135deg, #95a5a6, #bdc3c7);
+    color: white;
+  }
+  
+  .btn-pass:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-clear {
+    background: linear-gradient(135deg, #e74c3c, #ff6b6b);
+    color: white;
+  }
+  
+  .hand-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    opacity: 0.6;
+  }
+  
+  .hand-controls:hover {
+    opacity: 1;
   }
   
   .btn-sort, .btn-hint {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
-    border-radius: 20px;
+    border-radius: 15px;
     background: rgba(255,255,255,0.2);
-    color: white;
+    color: rgba(255,255,255,0.8);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     transition: all 0.3s;
   }
   
   .btn-sort:hover, .btn-hint:hover {
     background: rgba(255,255,255,0.3);
+    color: white;
   }
   
   .my-hand {
@@ -212,26 +333,8 @@
     padding: 20px 40px;
     background: rgba(0,0,0,0.3);
     border-radius: 20px;
-    max-width: 1200px;
+    max-width: 1400px;
     overflow-x: auto;
-  }
-  
-  .action-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  
-  .error-message {
-    color: #ff6b6b;
-    font-size: 18px;
-    font-weight: bold;
-    background: rgba(0,0,0,0.7);
-    padding: 10px 20px;
-    border-radius: 10px;
-    animation: pulse 0.5s ease-in-out;
   }
   
   @keyframes pulse {
