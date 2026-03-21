@@ -1,9 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   
-  const dispatch = createEventDispatcher<{
-    start: void
-  }>()
+  const dispatch = createEventDispatcher()
   
   function handleStart() {
     dispatch('start')

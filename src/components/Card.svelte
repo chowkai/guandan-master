@@ -1,16 +1,20 @@
 <script lang="ts">
   import type { Card } from '../stores/game'
+  import { createEventDispatcher } from 'svelte'
   
   export let card: Card
   export let selected = false
   export let small = false
   
-  let isFlipped: boolean = $state(false)
+  let isFlipped: boolean = false
+  
+  const dispatch = createEventDispatcher<{
+    toggle: { card: Card }
+  }>()
   
   function handleClick() {
     if (!small) {
       isFlipped = !isFlipped
-      // @ts-ignore
       dispatch('toggle', { card })
     }
   }

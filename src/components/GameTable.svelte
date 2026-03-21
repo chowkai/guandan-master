@@ -4,7 +4,7 @@
   import TurnIndicator from './TurnIndicator.svelte'
   import Card from './Card.svelte'
   
-  let selectedCards: Card[] = $state([])
+  let selectedCards: Card[] = []
   
   function toggleCard(card: Card) {
     const index = selectedCards.indexOf(card)
