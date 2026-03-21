@@ -44,8 +44,11 @@
     
     // 出牌
     game.playCards('bottom', selectedCards)
+    const cardCount = selectedCards.length
     selectedCards = []
     errorMsg = ''
+    
+    console.log(`💬 你出了${cardCount}张牌`)
     
     // 检查是否胜利
     if ($game.players.bottom.length === 0) {
@@ -61,6 +64,7 @@
   
   function pass() {
     if ($game.currentTurn !== 'bottom') return
+    console.log('💬 你不要')
     game.nextTurn()
   }
 </script>
@@ -174,6 +178,21 @@
       </button>
     </div>
     
+    <!-- 出牌提示 -->
+    {#if $game.lastHand}
+      <div class="play-hint">
+        {#if $game.lastHand.player === 'top'}
+          💬 对家出了{$game.lastHand.cards.length}张牌
+        {:else if $game.lastHand.player === 'left'}
+          💬 左家出了{$game.lastHand.cards.length}张牌
+        {:else if $game.lastHand.player === 'right'}
+          💬 右家出了{$game.lastHand.cards.length}张牌
+        {:else}
+          💬 你出了{$game.lastHand.cards.length}张牌
+        {/if}
+      </div>
+    {/if}
+    
     <div class="my-hand">
       {#each $game.players.bottom as card, i (i)}
         <Card 
@@ -229,10 +248,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px;
-    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    background: rgba(0,0,0,0.4);
     border-radius: 15px;
-    min-height: 120px;
+    min-height: 350px;
+    min-width: 250px;
   }
   
   .played-area.top { grid-area: top; }
@@ -241,14 +261,16 @@
   .played-area.bottom { grid-area: bottom; }
   
   .played-label {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 8px;
+    font-size: 20px;
+    color: gold;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
   }
   
   .played-cards {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -318,6 +340,18 @@
     padding: 15px 30px;
     background: rgba(0,0,0,0.5);
     border-radius: 25px;
+  }
+  
+  .play-hint {
+    font-size: 20px;
+    color: gold;
+    font-weight: bold;
+    background: rgba(0,0,0,0.6);
+    padding: 12px 30px;
+    border-radius: 20px;
+    margin-top: 15px;
+    border: 2px solid gold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
   }
   
   .error-message {

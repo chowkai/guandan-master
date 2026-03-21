@@ -177,10 +177,19 @@ function createGameStore() {
       const card = hand[hand.length - 1]
       this.playCards(player, [card])
       
+      // 显示提示
+      const playerName = {
+        top: '对家',
+        left: '左家',
+        right: '右家',
+        bottom: '我'
+      }[player]
+      console.log(`💬 ${playerName} 出了一张牌`)
+      
       // 检查是否胜利
       if (hand.length === 1) {
         setTimeout(() => {
-          alert('🎉 ' + player + ' 赢了！')
+          alert('🎉 ' + playerName + ' 赢了！')
         }, 100)
         return
       }

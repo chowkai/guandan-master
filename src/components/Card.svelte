@@ -60,8 +60,8 @@
 
 <style>
   .card {
-    width: 100px;
-    height: 145px;
+    width: 200px;
+    height: 290px;
     background: white;
     border: 3px solid;
     border-radius: 10px;
@@ -73,7 +73,7 @@
     transition: all 0.2s;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
-    margin-left: -50px;
+    margin-left: -100px;
     overflow: hidden;
   }
   
@@ -125,21 +125,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 64px;
+    font-size: 128px;
   }
   
   .card.small .card-center {
-    font-size: 42px;
+    font-size: 128px;
   }
   
   .joker-icon {
-    font-size: 48px;
+    font-size: 96px;
   }
   
   .joker-label {
-    font-size: 10px;
+    font-size: 20px;
     color: #f39c12;
     font-weight: bold;
-    margin-top: 2px;
+    margin-top: 4px;
+  }
+  
+  .card-top {
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1;
+  }
+  
+  .card.small .card-top {
+    font-size: 32px;
   }
 </style>
