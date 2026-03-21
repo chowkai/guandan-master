@@ -3,7 +3,7 @@
   import StartScreen from './components/StartScreen.svelte'
   import { game } from './stores/game'
   
-  let isStarted = false
+  let isStarted: boolean = false
   
   function handleGameStart() {
     isStarted = true

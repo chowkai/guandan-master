@@ -5,7 +5,7 @@
   export let selected = false
   export let small = false
   
-  let isFlipped = false
+  let isFlipped: boolean = $state(false)
   
   function handleClick() {
     if (!small) {
