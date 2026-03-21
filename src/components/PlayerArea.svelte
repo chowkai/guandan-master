@@ -1,8 +1,7 @@
-<script lang="ts">
-  import type { PlayerPosition } from '../stores/game'
+<script>
   import { game } from '../stores/game'
   
-  export let position: PlayerPosition
+  export let position
   
   const playerNames: Record<PlayerPosition, string> = {
     top: '对家',

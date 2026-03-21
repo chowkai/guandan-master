@@ -1,9 +1,9 @@
-<script lang="ts">
+<script>
   import GameTable from './components/GameTable.svelte'
   import StartScreen from './components/StartScreen.svelte'
   import { game } from './stores/game'
   
-  let isStarted: boolean = false
+  let isStarted = false
   
   function handleGameStart() {
     isStarted = true

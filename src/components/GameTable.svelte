@@ -1,10 +1,10 @@
-<script lang="ts">
+<script>
   import { game } from '../stores/game'
   import PlayerArea from './PlayerArea.svelte'
   import TurnIndicator from './TurnIndicator.svelte'
   import Card from './Card.svelte'
   
-  let selectedCards: Card[] = []
+  let selectedCards = []
   
   function toggleCard(card: Card) {
     const index = selectedCards.indexOf(card)

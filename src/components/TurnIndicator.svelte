@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { game } from '../stores/game'
   
   $: currentPlayerName = (() => {

@@ -1,16 +1,13 @@
-<script lang="ts">
-  import type { Card } from '../stores/game'
+<script>
   import { createEventDispatcher } from 'svelte'
   
-  export let card: Card
+  export let card
   export let selected = false
   export let small = false
   
-  let isFlipped: boolean = false
+  let isFlipped = false
   
-  const dispatch = createEventDispatcher<{
-    toggle: { card: Card }
-  }>()
+  const dispatch = createEventDispatcher()
   
   function handleClick() {
     if (!small) {

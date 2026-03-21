@@ -1,39 +1,32 @@
-import { writable, derived } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 // ========================================
-// 类型定义
+// 类型定义（JSDoc 注释，不编译）
 // ========================================
 
-export type PlayerPosition = 'top' | 'left' | 'right' | 'bottom'
-export type GameStatus = 'ready' | 'playing' | 'over' | 'tribute'
-export type Suit = 'clubs' | 'diamonds' | 'hearts' | 'spades' | 'joker'
-export type Rank = '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A' | '2' | 'small_joker' | 'big_joker'
+/**
+ * @typedef {'top' | 'left' | 'right' | 'bottom'} PlayerPosition
+ * @typedef {'ready' | 'playing' | 'over' | 'tribute'} GameStatus
+ * @typedef {'clubs' | 'diamonds' | 'hearts' | 'spades' | 'joker'} Suit
+ * @typedef {'3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A' | '2' | 'small_joker' | 'big_joker'} Rank
+ */
 
-export interface Card {
-  suit: Suit
-  rank: Rank
-  value: number
-}
+/**
+ * @typedef {Object} Card
+ * @property {Suit} suit
+ * @property {Rank} rank
+ * @property {number} value
+ */
 
-export interface Player {
-  position: PlayerPosition
-  hand: Card[]
-  isAI: boolean
-  name: string
-}
-
-export interface GameState {
-  players: Record<PlayerPosition, Card[]>
-  currentTurn: PlayerPosition | null
-  gameStatus: GameStatus
-  level: number
-  lastHand: {
-    player: PlayerPosition
-    cards: Card[]
-    type: string
-  } | null
-  winner: PlayerPosition | null
-}
+/**
+ * @typedef {Object} GameState
+ * @property {Record<PlayerPosition, Card[]>} players
+ * @property {PlayerPosition | null} currentTurn
+ * @property {GameStatus} gameStatus
+ * @property {number} level
+ * @property {Object | null} lastHand
+ * @property {PlayerPosition | null} winner
+ */
 
 // ========================================
 // 游戏状态 Store
