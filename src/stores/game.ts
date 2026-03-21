@@ -145,7 +145,7 @@ function createGameStore() {
     
     // 设置先手玩家
     setFirstPlayer() {
-      const positions: PlayerPosition[] = ['top', 'left', 'right', 'bottom']
+      const positions = ['top', 'left', 'right', 'bottom']
       const randomIndex = Math.floor(Math.random() * 4)
       const firstPlayer = positions[randomIndex]
       
@@ -156,6 +156,7 @@ function createGameStore() {
       }))
       
       console.log('✅ 先手玩家已设置:', firstPlayer)
+    },
     
     // AI 自动出牌（快速响应）
     aiPlay(player) {
