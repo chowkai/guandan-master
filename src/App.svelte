@@ -26,16 +26,31 @@
     box-sizing: border-box;
   }
   
+  :global(html) {
+    width: 100%;
+    height: 100%;
+  }
+  
   :global(body) {
-    font-family: 'Noto Serif SC', serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Serif SC', 'Microsoft YaHei', sans-serif;
     background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+    background-attachment: fixed;
     color: white;
     overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  :global(#app) {
+    width: 100%;
+    height: 100%;
   }
   
   .app {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     position: relative;
   }
 </style>
