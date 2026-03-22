@@ -1,175 +1,85 @@
-# 掼蛋大师 v2 - Svelte 重构版
+# 掼蛋大师 v3
 
-## 🚀 快速开始
+> 打造最佳单机掼蛋体验
 
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 浏览器打开
-http://localhost:3000
-```
-
-## ✨ 核心改进
-
-### 1. 响应式状态管理
-
-```typescript
-// 之前（原生 JS）- 手动更新 UI
-this.state.currentTurn = 'bottom'
-this.updateUI()
-this.updateTurnIndicator()
-this.updateGameStatus('轮到您出牌')
-
-// 现在（Svelte）- 自动响应
-game.setFirstPlayer() // UI 自动更新！
-```
-
-### 2. 组件化架构
-
-```
-src/
-├── App.svelte              # 根组件
-├── components/
-│   ├── GameTable.svelte    # 游戏桌
-│   ├── PlayerArea.svelte   # 玩家区域
-│   ├── Card.svelte         # 卡牌
-│   ├── TurnIndicator.svelte # 回合提示
-│   └── StartScreen.svelte  # 开始界面
-└── stores/
-    └── game.ts             # 状态管理
-```
-
-### 3. 类型安全
-
-```typescript
-// 完整的 TypeScript 支持
-type PlayerPosition = 'top' | 'left' | 'right' | 'bottom'
-type GameStatus = 'ready' | 'playing' | 'over'
-
-interface Card {
-  suit: Suit
-  rank: Rank
-  value: number
-}
-```
-
-## 🎯 核心功能
-
-### ✅ 已实现
-
-- [x] 开始界面
-- [x] 发牌（4 副牌，108 张）
-- [x] 随机先手玩家（**核心修复！**）
-- [x] 回合提示条（自动变色）
-- [x] 玩家手牌显示
-- [x] 选牌/出牌
-- [x] AI 玩家占位
-
-### ⏳ 待实现
-
-- [ ] 牌型验证
-- [ ] AI 出牌逻辑
-- [ ] 贡牌系统
-- [ ] 游戏结束判定
-- [ ] 音效系统
-- [ ] 动画效果
-
-## 🔧 开发说明
-
-### 状态管理
-
-```typescript
-import { game } from './stores/game'
-
-// 开始游戏
-game.startNewGame()
-
-// 出牌
-game.playCards('bottom', selectedCards)
-
-// 切换回合
-game.nextTurn()
-```
-
-### 响应式状态
-
-```svelte
-<script>
-  import { game } from './stores/game'
-  
-  // $ 前缀自动订阅
-  $: currentTurn = $game.currentTurn
-  $: handSize = $game.players.bottom?.length || 0
-</script>
-```
-
-## 📊 代码对比
-
-| 指标 | v1（原生 JS） | v2（Svelte） | 改进 |
-|------|-------------|-------------|------|
-| **代码行数** | ~3000 行 | ~800 行 | -73% |
-| **文件大小** | 150KB | 40KB | -73% |
-| **加载时间** | 2.5 秒 | 0.8 秒 | -68% |
-| **开发效率** | 低 | 高 | +200% |
-
-## 🎨 UI 特性
-
-- ✅ 响应式设计（桌面/平板/手机）
-- ✅ 流畅动画（60 FPS）
-- ✅ 渐变背景（中国风）
-- ✅ 金色边框（高级感）
-- ✅ 脉冲动画（提示条）
-
-## 🐛 已知问题修复
-
-### 问题 1: 开新局无法出牌
-
-**原因**: DOM 元素为 null 导致 JS 错误
-
-**修复**: 
-```typescript
-// Svelte 响应式 - 无需手动操作 DOM
-$game.currentTurn = firstPlayer
-$game.gameStatus = 'playing'
-// UI 自动更新！
-```
-
-### 问题 2: 提示条不更新
-
-**原因**: 状态更新与 UI 更新不同步
-
-**修复**:
-```svelte
-<!-- 响应式计算 -->
-$: message = isPlayerTurn ? '轮到你出牌' : `轮到 ${currentPlayerName} 出牌`
-$: bgColor = isPlayerTurn ? 'green' : 'red'
-```
-
-## 🚀 下一步
-
-1. **完成核心玩法** (3-5 天)
-   - 牌型验证
-   - AI 逻辑
-   - 贡牌系统
-
-2. **优化 UI/UX** (2-3 天)
-   - 发牌动画
-   - 出牌动画
-   - 音效系统
-
-3. **测试与发布** (2-3 天)
-   - 单元测试
-   - E2E 测试
-   - 性能优化
-
-## 📝 许可证
-
-MIT License
+**版本**: v3.0 (重启版)  
+**重启日期**: 2026-03-22  
+**状态**: 🟢 Phase 0: 项目启动
 
 ---
 
-**开发中** - 预计 2026-04-01 发布 v2.0 正式版
+## 📋 项目说明
+
+本项目从 v3.0 重新开始，采用规范化开发流程：
+
+- ✅ 专业团队分工（产品/UI/开发/测试）
+- ✅ 严格质量把控（Code Review + 自动化测试）
+- ✅ 用户体验优先
+- ✅ 凡事有交代
+
+---
+
+## 🚀 当前阶段
+
+**Phase 0: 项目启动** (2026-03-22)
+
+- [x] 项目重启决策
+- [x] 原仓库清空
+- [ ] 团队组建
+- [ ] 工具准备
+
+---
+
+## 📅 项目计划
+
+| 阶段 | 内容 | 预计时间 | 状态 |
+|------|------|----------|------|
+| **Phase 0** | 项目启动 | 1 天 | 🟢 进行中 |
+| **Phase 1** | 需求调研 | 2-3 天 | ⏳ 待开始 |
+| **Phase 2** | 设计阶段 | 2-3 天 | ⏳ 待开始 |
+| **Phase 3** | 开发实现 | 5-7 天 | ⏳ 待开始 |
+| **Phase 4** | 测试验收 | 2-3 天 | ⏳ 待开始 |
+
+---
+
+## 👥 项目团队
+
+| 角色 | 职责 | 负责人 |
+|------|------|--------|
+| 用户需求方 | 需求提出/最终验收 | 周凯 |
+| 项目经理 (PM) | 团队协调/进度管控 | AI |
+| 产品经理 | 需求分析/原型设计 | AI |
+| UI 设计师 | 界面设计/视觉呈现 | AI |
+| 架构师 | 技术选型/架构设计 | AI |
+| 开发工程师 | 编码实现 | AI |
+| 测试工程师 | 测试用例/Bug 跟踪 | AI |
+
+---
+
+## 📁 文档目录
+
+```
+guandan/
+├── README.md                 ← 你在这里
+├── RESTART.md                ← 重启说明
+├── docs/
+│   ├── requirements/         ← 需求文档
+│   ├── design/               ← 设计文档
+│   ├── development/          ← 开发文档
+│   └── test/                 ← 测试文档
+├── src/                      ← 源代码
+└── tests/                    ← 测试用例
+```
+
+---
+
+## 📞 联系方式
+
+- **GitHub**: [仓库地址]
+- **项目管理**: AI (PM)
+- **用户反馈**: 周凯
+
+---
+
+**最后更新**: 2026-03-22  
+**下次更新**: Phase 1 完成后
