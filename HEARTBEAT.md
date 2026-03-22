@@ -1,5 +1,17 @@
-# HEARTBEAT.md
+# HEARTBEAT.md - 定时检查任务
 
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+# 每日站会汇报检查
+- 08:00 检查：每日站会汇报（昨日完成/今日计划/阻塞问题）
+- 20:00 检查：每日站会汇报（今日完成/明日计划/风险预警）
 
-# Add tasks below when you want the agent to check something periodically.
+# 掼蛋项目 Phase 2 关键节点
+- 03-23 12:00 检查：原型设计完成
+- 03-23 18:00 检查：UI 设计完成 + 技术选型完成
+- 03-23 20:00 检查：Phase 2 完成汇报 + 发送周凯评审
+
+# 汇报检查清单
+- [ ] QQ 消息通道正常
+- [ ] 记忆文件已更新
+- [ ] Git 已 commit
+- [ ] 文档已保存
+- [ ] 无技术障碍
