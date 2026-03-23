@@ -1,0 +1,67 @@
+# 掼蛋大师 v3 - 设计源文件
+
+**版本**: v2.0  
+**创建日期**: 2026-03-23  
+**设计师**: design-agent
+
+---
+
+## 设计工具
+
+由于环境限制，无法直接创建 Figma/Sketch 源文件。
+
+**推荐方案**:
+1. 使用导出的 PNG 图片作为参考
+2. 在 Figma 中导入 PNG 作为底图
+3. 按照 `ui-game-screen-v2.md` 和 `layout-analysis.md` 中的标注重建
+
+---
+
+## Figma 重建指南
+
+### 1. 创建画布
+- 尺寸：750px × 1334px
+- 背景色：#1a472a
+
+### 2. 导入参考图
+- 导入 `main-screen.png` 作为主界面参考
+- 导入 `game-screen.png` 作为游戏界面参考
+
+### 3. 使用标注文档
+- 参考 `ui-game-screen-v2.md` 中的详细标注
+- 参考 `layout-analysis.md` 中的布局分析
+
+### 4. 组件库
+按照 `component-library.md` 创建可复用组件：
+- 按钮（主按钮/次要按钮/操作按钮/图标按钮）
+- 扑克牌组件
+- 信息卡片
+- 出牌区域
+
+---
+
+## 在线设计工具链接
+
+### Figma
+- 网址：https://www.figma.com
+- 免费计划：支持 3 个项目
+- 协作功能：支持多人实时协作
+
+### Canva
+- 网址：https://www.canva.com
+- 免费计划：基础功能可用
+- 模板丰富
+
+---
+
+## 导出 PNG 说明
+
+当前导出的 PNG 图片已保存在：
+- `exports/main-screen.png` - 主界面
+- `exports/game-screen.png` - 游戏界面
+
+如需可编辑源文件，请在 Figma/Canva 中参考上述文档重建。
+
+---
+
+**生成时间**: 2026-03-23
