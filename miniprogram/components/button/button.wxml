@@ -1,0 +1,21 @@
+<!-- 按钮组件模板 -->
+<view 
+  class="btn {{getButtonClass()}}"
+  style="{{getButtonStyle()}}"
+  bindtap="onTap"
+  hover-class="{{disabled || loading ? '' : 'btn-hover'}}"
+  hover-stay-time="150"
+>
+  <!-- 加载中动画 -->
+  <view class="btn-loading-spinner" wx:if="{{loading}}">
+    <view class="spinner"></view>
+  </view>
+  
+  <!-- 按钮文字 -->
+  <text class="btn-text">{{text}}</text>
+  
+  <!-- 图标占位 (可扩展) -->
+  <view class="btn-icon" wx:if="{{icon}}">
+    <text>{{icon}}</text>
+  </view>
+</view>
