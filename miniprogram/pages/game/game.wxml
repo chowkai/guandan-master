@@ -58,10 +58,10 @@
       <text style="color: yellow; font-size: 28rpx; display: block; margin-bottom: 20rpx;">我的手牌 (点击选牌):</text>
       
       <!-- 卡牌容器 - 手牌扇形排列 (从左到右，左压右) -->
-      <view style="display: flex; justify-content: center; position: relative; height: 320rpx; margin-top: 20rpx; overflow: visible;">
+      <view style="display: flex; justify-content: center; position: relative; height: 320rpx; margin-top: 20rpx; overflow: hidden;">
         <view wx:for="{{myCards}}" wx:key="id" wx:for-item="card"
               class="card-container {{selectedCards[card.id] ? 'selected' : ''}}"
-              style="width: 96px; height: 134px; background: white; border-radius: 12rpx; position: absolute; left: 50%; bottom: 0; cursor: pointer; transition: all 0.2s; {{selectedCards[card.id] ? 'transform: translateY(-40rpx); box-shadow: 0 -8rpx 16rpx rgba(0,0,0,0.3); z-index: 100;' : ''}}; margin-left: {{(index - myCards.length / 2) * 12}}px; z-index: {{index}};"
+              style="width: 96px; height: 134px; background: white; border-radius: 12rpx; position: absolute; left: 50%; bottom: 0; cursor: pointer; transition: all 0.2s; {{selectedCards[card.id] ? 'transform: translateY(-40rpx); box-shadow: 0 -8rpx 16rpx rgba(0,0,0,0.3); z-index: 100;' : ''}}; margin-left: {{(index - myCards.length / 2) * 8}}px; z-index: {{index}};"
               bindtap="onCardTap" data-card-id="{{card.id}}">
           
           <!-- 卡牌内容 -->

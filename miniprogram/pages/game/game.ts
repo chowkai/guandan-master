@@ -52,23 +52,6 @@ Page<IGameData>({
   },
 
   /**
-   * 初始化游戏
-   */
-  initGame() {
-    // 初始化玩家
-    this.initPlayers();
-    
-    // 初始化牌局
-    this.dealCards();
-    
-    // 设置游戏状态
-    this.setData({
-      gameStatus: 'playing',
-      currentPlayer: 0
-    });
-  },
-
-  /**
    * 初始化玩家
    */
   initPlayers() {
@@ -259,7 +242,7 @@ Page<IGameData>({
    * 出牌
    */
   onPlayCards() {
-    const { selectedCards, currentPlayer } = this.data;
+    const { selectedCards, currentPlayer, myCards } = this.data;
     const cardIds = Object.keys(selectedCards);
     
     if (currentPlayer !== 0) {
@@ -275,19 +258,44 @@ Page<IGameData>({
     console.log('[Game] 出牌:', cardIds.length, '张');
     
     // 移除已出的牌
-    const newMyCards = this.data.myCards.filter(card => !selectedCards[card.id]);
+    const newMyCards = myCards.filter(card => !selectedCards[card.id]);
+    
+    // 更新出牌记录
+    const selectedCardList = myCards.filter(card => selectedCards[card.id]);
+    const { playHistory } = this.data;
+    const newPlayHistory = [
+      ...playHistory,
+      {
+        round: playHistory.length + 1,
+        playerName: '我',
+        playType: this.detectPlayType(selectedCardList),
+        cards: selectedCardList
+      }
+    ];
     
     this.setData({
       myCards: newMyCards,
       selectedCards: {},
       selectedCount: 0,
-      canPlay: false
+      canPlay: false,
+      currentPlay: selectedCardList,
+      playHistory: newPlayHistory
     });
     
     wx.showToast({ title: `出了 ${cardIds.length} 张牌`, icon: 'success' });
     
     // 轮到下家
     setTimeout(() => this.nextPlayer(), 1000);
+  },
+
+  /**
+   * 检测牌型
+   */
+  detectPlayType(cards: any[]): string {
+    if (cards.length === 1) return 'single';
+    if (cards.length === 2 && cards[0].value === cards[1].value) return 'pair';
+    if (cards.length >= 5) return 'straight';
+    return 'custom';
   },
 
   /**
@@ -303,91 +311,5 @@ Page<IGameData>({
     });
     
     console.log('[Game] 轮到玩家:', next);
-  },
-    
-    // 出牌逻辑
-    console.log('出牌:', selectedCards);
-    
-    // 更新手牌
-    const { myCards } = this.data;
-    const newMyCards = myCards.filter(card => 
-      !selectedCards.some(selected => 
-        selected.suit === card.suit && selected.value === card.value
-      )
-    );
-    
-    // 更新出牌记录
-    const { playHistory } = this.data;
-    const newPlayHistory = [
-      ...playHistory,
-      {
-        round: playHistory.length + 1,
-        playerName: '我',
-        playType: this.detectPlayType(selectedCards),
-        cards: selectedCards
-      }
-    ];
-    
-    this.setData({
-      myCards: newMyCards,
-      selectedCards: [],
-      currentPlay: selectedCards,
-      playHistory: newPlayHistory,
-      canPlay: false
-    });
-    
-    // 模拟其他玩家出牌
-    setTimeout(() => {
-      this.simulateOtherPlayerPlay();
-    }, 2000);
-  },
-
-  /**
-   * 不出
-   */
-  onPass() {
-    console.log('不出');
-    this.setData({ canPlay: false });
-    
-    // 轮到下家
-    this.nextPlayer();
-  },
-
-  /**
-   * 提示
-   */
-  onHint() {
-    console.log('提示');
-    // TODO: 实现提示逻辑
-  },
-
-  /**
-   * 检测牌型
-   */
-  detectPlayType(cards: any[]): string {
-    if (cards.length === 1) return 'single';
-    if (cards.length === 2 && cards[0].value === cards[1].value) return 'pair';
-    if (cards.length >= 5) return 'straight';
-    return 'custom';
-  },
-
-  /**
-   * 模拟其他玩家出牌
-   */
-  simulateOtherPlayerPlay() {
-    // 模拟逻辑
-    this.setData({
-      canPlay: true,
-      currentPlayer: 0
-    });
-  },
-
-  /**
-   * 下一个玩家
-   */
-  nextPlayer() {
-    const { currentPlayer } = this.data;
-    const next = (currentPlayer + 1) % 4;
-    this.setData({ currentPlayer: next });
   }
 });
