@@ -45,24 +45,29 @@
     <view class="hand-section" style="min-height: 400rpx; background: rgba(255,0,0,0.1); border: 2rpx solid red; padding: 20rpx; margin-bottom: 20rpx;">
       <text style="color: yellow; font-size: 28rpx; display: block; margin-bottom: 20rpx;">我的手牌 (点击选牌):</text>
       
-      <!-- 卡牌容器 -->
-      <view style="display: flex; flex-wrap: wrap; gap: 10rpx; justify-content: flex-start;">
+      <!-- 卡牌容器 - 手牌扇形排列 -->
+      <view style="display: flex; justify-content: center; position: relative; height: 280rpx; margin-top: 20rpx;">
         <view wx:for="{{myCards}}" wx:key="id" wx:for-item="card"
               class="card-container {{selectedCards[card.id] ? 'selected' : ''}}"
-              style="width: 80px; height: 112px; background: white; border-radius: 12rpx; position: relative; cursor: pointer; transition: all 0.2s; {{selectedCards[card.id] ? 'transform: translateY(-20rpx); box-shadow: 0 -8rpx 16rpx rgba(0,0,0,0.3);' : ''}}"
+              style="width: 96px; height: 134px; background: white; border-radius: 12rpx; position: absolute; left: 50%; bottom: 0; cursor: pointer; transition: all 0.2s; {{selectedCards[card.id] ? 'transform: translateY(-40rpx); box-shadow: 0 -8rpx 16rpx rgba(0,0,0,0.3); z-index: 10;' : ''}}; margin-left: {{(index - myCards.length / 2) * -50}}rpx; z-index: {{index}};"
               bindtap="onCardTap" data-card-id="{{card.id}}">
           
           <!-- 卡牌内容 -->
-          <view style="position: relative; width: 100%; height: 100%;">
+          <view style="position: relative; width: 100%; height: 100%; border: 1rpx solid #e0e0e0; border-radius: 12rpx; overflow: hidden;">
             <!-- 左上角：字 + 花 -->
-            <view style="position: absolute; top: 8rpx; left: 8rpx; display: flex; flex-direction: column; align-items: center;">
+            <view style="position: absolute; top: 8rpx; left: 8rpx; display: flex; flex-direction: column; align-items: center; line-height: 1;">
               <text style="font-size: 32rpx; font-weight: bold; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}};">{{card.value}}</text>
-              <text style="font-size: 28rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}};">{{getSuitSymbol(card.suit)}}</text>
+              <text style="font-size: 32rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}}; line-height: 1;">{{getSuitSymbol(card.suit)}}</text>
             </view>
             
             <!-- 中间：大花色 -->
-            <view style="position: absolute; top: 50%; left: 50%; transform: translate(20%, 10%);">
-              <text style="font-size: 80rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}}; opacity: 0.9;">{{getSuitSymbol(card.suit)}}</text>
+            <view style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+              <text style="font-size: 96rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}}; line-height: 1;">{{getSuitSymbol(card.suit)}}</text>
+            </view>
+            
+            <!-- 王牌特殊显示 -->
+            <view wx:if="{{card.suit === 'joker'}}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+              <text style="font-size: 40rpx; font-weight: bold; color: {{card.value === 'RJ' ? '#d32f2f' : '#212121'}};">{{card.value === 'BJ' ? '小王' : '大王'}}</text>
             </view>
           </view>
         </view>
