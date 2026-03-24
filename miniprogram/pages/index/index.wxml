@@ -40,31 +40,11 @@
       <text class="menu-desc">好友对战</text>
     </view>
     
-    <!-- 创建房间 -->
-    <view class="menu-item tertiary" bindtap="onCreateRoom">
-      <view class="menu-icon">➕</view>
-      <text class="menu-text">创建房间</text>
-      <text class="menu-desc">邀请好友</text>
-    </view>
-    
-    <!-- 加入房间 -->
-    <view class="menu-item tertiary" bindtap="onJoinRoom">
-      <view class="menu-icon">🚪</view>
-      <text class="menu-text">加入房间</text>
-      <text class="menu-desc">输入房号</text>
-    </view>
-  </view>
-  
-  <!-- 最近房间 -->
-  <view class="recent-section" wx:if="{{recentRooms.length > 0}}">
-    <view class="section-header">
-      <text class="section-title">最近游戏</text>
-    </view>
-    <view class="recent-list">
-      <view class="recent-item" wx:for="{{recentRooms}}" wx:key="id">
-        <text class="recent-name">{{item.roomName}}</text>
-        <text class="recent-time">{{item.lastPlayTime}}</text>
-      </view>
+    <!-- 游戏规则 -->
+    <view class="menu-item tertiary" bindtap="onViewRules">
+      <view class="menu-icon">📖</view>
+      <text class="menu-text">游戏规则</text>
+      <text class="menu-desc">掼蛋规则简介</text>
     </view>
   </view>
   

@@ -1,0 +1,117 @@
+/**
+ * 设置页面样式
+ */
+.settings-container {
+  min-height: 100vh;
+  background-color: var(--light-gray);
+  padding-bottom: var(--spacing-xl);
+}
+
+/* 设置区域 */
+.settings-section {
+  margin-top: var(--spacing-lg);
+  background-color: var(--white);
+}
+
+.section-title {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--gray);
+  background-color: #f8f8f8;
+}
+
+/* 设置项 */
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1rpx solid #f0f0f0;
+  background-color: var(--white);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.item-icon {
+  font-size: var(--font-size-lg);
+}
+
+.item-label {
+  font-size: var(--font-size-md);
+  color: var(--dark-gray);
+}
+
+.item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.item-value {
+  font-size: var(--font-size-sm);
+  color: var(--gray);
+}
+
+.item-arrow {
+  font-size: var(--font-size-lg);
+  color: var(--gray);
+  margin-left: var(--spacing-xs);
+}
+
+/* 开关样式 */
+.switch {
+  width: 96rpx;
+  height: 52rpx;
+  background-color: #e0e0e0;
+  border-radius: 26rpx;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.switch.active {
+  background-color: var(--active-green);
+}
+
+.switch-handle {
+  width: 44rpx;
+  height: 44rpx;
+  background-color: var(--white);
+  border-radius: 50%;
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.switch.active .switch-handle {
+  transform: translateX(44rpx);
+}
+
+/* 底部按钮 */
+.footer-section {
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.reset-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background-color: var(--white);
+  color: var(--red);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--red);
+}
+
+.reset-btn::after {
+  border: none;
+}

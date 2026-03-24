@@ -5,20 +5,17 @@
 interface IIndexData {
   userInfo: WechatMiniprogram.UserInfo | null;
   hasLogin: boolean;
-  recentRooms: any[];
 }
 
 Page<IIndexData>({
   data: {
     userInfo: null,
-    hasLogin: false,
-    recentRooms: []
+    hasLogin: false
   },
 
   onLoad() {
     console.log('主页面加载');
     this.checkLoginStatus();
-    this.loadRecentRooms();
   },
 
   onShow() {
@@ -41,15 +38,6 @@ Page<IIndexData>({
   },
 
   /**
-   * 加载最近房间
-   */
-  loadRecentRooms() {
-    // TODO: 从本地存储加载最近的游戏房间
-    const recentRooms = [];
-    this.setData({ recentRooms });
-  },
-
-  /**
    * 开始游戏 (单机)
    */
   onStartGame() {
@@ -60,29 +48,25 @@ Page<IIndexData>({
   },
 
   /**
-   * P2P 联机
+   * P2P 联机（预留）
    */
   onP2PConnect() {
     console.log('进入 P2P 联机');
-    wx.navigateTo({
-      url: '/pages/game/game?mode=p2p'
+    wx.showToast({
+      title: '功能开发中...',
+      icon: 'none',
+      duration: 1500
     });
   },
 
   /**
-   * 创建设置
+   * 查看游戏规则
    */
-  onCreateRoom() {
-    console.log('创建房间');
-    // TODO: 创建房间逻辑
-  },
-
-  /**
-   * 加入房间
-   */
-  onJoinRoom() {
-    console.log('加入房间');
-    // TODO: 加入房间逻辑
+  onViewRules() {
+    console.log('查看游戏规则');
+    wx.navigateTo({
+      url: '/pages/rules/rules'
+    });
   },
 
   /**
@@ -90,7 +74,9 @@ Page<IIndexData>({
    */
   onOpenSettings() {
     console.log('打开设置');
-    // TODO: 设置页面
+    wx.navigateTo({
+      url: '/pages/settings/settings'
+    });
   },
 
   /**
