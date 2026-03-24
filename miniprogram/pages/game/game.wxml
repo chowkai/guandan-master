@@ -1,5 +1,5 @@
 <!-- 游戏页面模板 - 调试版本 -->
-<view class="game-container" style="padding: 20rpx;">
+<view class="game-container" style="padding: 20rpx; min-height: 100vh; background: #1a472a;">
   <!-- 调试信息 -->
   <view style="background: rgba(0,0,0,0.8); color: #0f0; padding: 20rpx; margin-bottom: 20rpx; border-radius: 8rpx;">
     <text>手牌数：{{myCards.length}}</text>
@@ -8,136 +8,20 @@
   </view>
   
   <!-- 手牌列表 -->
-  <view style="background: rgba(255,0,0,0.1); border: 2rpx solid red; padding: 20rpx;">
-    <text style="color: yellow; font-size: 28rpx;">手牌详情:</text>
+  <view style="background: rgba(255,0,0,0.1); border: 2rpx solid red; padding: 20rpx; margin-bottom: 20rpx;">
+    <text style="color: yellow; font-size: 28rpx; display: block; margin-bottom: 10rpx;">手牌详情 (共{{myCards.length}}张):</text>
     <view wx:for="{{myCards}}" wx:key="id" wx:for-item="card" 
           style="display: inline-block; background: white; padding: 10rpx; margin: 5rpx; border-radius: 8rpx;">
-      <text>{{card.value}}{{card.suit}}</text>
-    </view>
-  </view>
-</view>
-  
-  <!-- 顶部玩家 (对家) -->
-  <view class="player-top-area">
-    <player
-      wx:for="{{players}}"
-      wx:if="{{item.position === 'top'}}"
-      wx:key="playerId"
-      player-id="{{item.playerId}}"
-      player-name="{{item.playerName}}"
-      avatar-url="{{item.avatarUrl}}"
-      card-count="{{item.cardCount}}"
-      is-self="{{item.isSelf}}"
-      is-landlord="{{item.isLandlord}}"
-      position="{{item.position}}"
-    />
-  </view>
-  
-  <!-- 左侧玩家 (上家) -->
-  <view class="player-left-area">
-    <player
-      wx:for="{{players}}"
-      wx:if="{{item.position === 'left'}}"
-      wx:key="playerId"
-      player-id="{{item.playerId}}"
-      player-name="{{item.playerName}}"
-      avatar-url="{{item.avatarUrl}}"
-      card-count="{{item.cardCount}}"
-      is-self="{{item.isSelf}}"
-      is-landlord="{{item.isLandlord}}"
-      position="{{item.position}}"
-    />
-  </view>
-  
-  <!-- 右侧玩家 (下家) -->
-  <view class="player-right-area">
-    <player
-      wx:for="{{players}}"
-      wx:if="{{item.position === 'right'}}"
-      wx:key="playerId"
-      player-id="{{item.playerId}}"
-      player-name="{{item.playerName}}"
-      avatar-url="{{item.avatarUrl}}"
-      card-count="{{item.cardCount}}"
-      is-self="{{item.isSelf}}"
-      is-landlord="{{item.isLandlord}}"
-      position="{{item.position}}"
-    />
-  </view>
-  
-  <!-- 中央出牌区 -->
-  <view class="center-area">
-    <play-area
-      play-history="{{playHistory}}"
-      current-play="{{currentPlay}}"
-      is-expanded="{{false}}"
-      bind:expandchange="onExpandChange"
-    />
-  </view>
-  
-  <!-- 底部手牌区 -->
-  <view class="bottom-area">
-    <!-- 手牌 -->
-    <view class="hand-section" style="background: rgba(255,0,0,0.1); border: 2rpx solid red;">
-      <hand-area
-        cards="{{myCards}}"
-        selected-cards="{{selectedCards}}"
-        can-play="{{canPlay}}"
-        bind:cardselect="onCardSelect"
-      />
-      <!-- 调试：显示手牌数据 -->
-      <view style="font-size: 20rpx; color: yellow; margin-top: 10rpx;">
-        <text>myCards[0]: {{myCards[0].suit}} {{myCards[0].value}}</text>
-      </view>
-    </view>
-    
-    <!-- 操作按钮区 -->
-    <view class="action-section">
-      <view class="action-buttons">
-        <button 
-          class="action-btn pass-btn" 
-          bindtap="onPass"
-          disabled="{{!canPlay}}"
-        >
-          不出
-        </button>
-        
-        <button 
-          class="action-btn hint-btn" 
-          bindtap="onHint"
-        >
-          提示
-        </button>
-        
-        <button 
-          class="action-btn play-btn" 
-          bindtap="onPlayCards"
-          disabled="{{!canPlay || selectedCards.length === 0}}"
-        >
-          出牌 ({{selectedCards.length}})
-        </button>
-      </view>
-    </view>
-    
-    <!-- 底部玩家 (自己) -->
-    <view class="player-bottom-area">
-      <player
-        wx:for="{{players}}"
-        wx:if="{{item.position === 'bottom'}}"
-        wx:key="playerId"
-        player-id="{{item.playerId}}"
-        player-name="{{item.playerName}}"
-        avatar-url="{{item.avatarUrl}}"
-        card-count="{{item.cardCount}}"
-        is-self="{{item.isSelf}}"
-        is-landlord="{{item.isLandlord}}"
-        position="{{item.position}}"
-      />
+      <text>{{card.value}} {{card.suit}}</text>
     </view>
   </view>
   
-  <!-- 游戏状态提示 -->
-  <view class="game-status-toast" wx:if="{{gameStatus === 'waiting'}}">
-    <text>等待游戏开始...</text>
+  <!-- 玩家信息 -->
+  <view style="background: rgba(0,255,0,0.1); border: 2rpx solid green; padding: 20rpx;">
+    <text style="color: yellow; font-size: 28rpx; display: block; margin-bottom: 10rpx;">玩家信息:</text>
+    <view wx:for="{{players}}" wx:key="playerId" wx:for-item="player" 
+          style="background: white; padding: 10rpx; margin: 5rpx; border-radius: 8rpx;">
+      <text>{{player.playerName}} - {{player.position}} - {{player.cardCount}}张</text>
+    </view>
   </view>
 </view>
