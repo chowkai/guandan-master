@@ -59,18 +59,29 @@ Component<ICardData>({
      * 处理卡牌点击
      */
     onTap() {
-      if (!this.data.isPlayable) return;
+      console.log('[Card] onTap called, isPlayable:', this.data.isPlayable);
+      
+      if (!this.data.isPlayable) {
+        console.log('[Card] Card not playable, returning');
+        return;
+      }
+      
+      const newIsSelected = !this.data.isSelected;
+      console.log('[Card] Toggling selection:', this.data.suit, this.data.value, '->', newIsSelected);
       
       this.setData({
-        isSelected: !this.data.isSelected
+        isSelected: newIsSelected
       });
 
       // 触发选牌事件
       this.triggerEvent('cardtap', {
         suit: this.data.suit,
         value: this.data.value,
-        isSelected: this.data.isSelected
+        isSelected: newIsSelected,
+        id: this.data.id
       });
+      
+      console.log('[Card] Event triggered: cardtap');
     },
 
     /**

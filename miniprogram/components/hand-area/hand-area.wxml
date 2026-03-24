@@ -11,11 +11,12 @@
       <!-- 每行的卡牌 -->
       <card
         wx:for="{{item}}"
-        wx:key="*this"
+        wx:for-item="cardItem"
+        wx:key="id"
         class="hand-card"
-        suit="{{item.suit}}"
-        value="{{item.value}}"
-        isSelected="{{isCardSelected(item.suit, item.value)}}"
+        suit="{{cardItem.suit}}"
+        value="{{cardItem.value}}"
+        isSelected="{{isCardSelected(cardItem.suit, cardItem.value)}}"
         isPlayable="{{canPlay}}"
         cardWidth="{{cardWidth}}"
         cardHeight="{{cardHeight}}"

@@ -161,19 +161,30 @@ Page<IGameData>({
    * 处理选牌
    */
   onCardSelect(event: WechatMiniprogram.CustomEvent) {
+    console.log('[Game] onCardSelect received:', event.detail);
+    
     const { suit, value, isSelected } = event.detail;
-    const { selectedCards } = this.data;
+    const { selectedCards, myCards } = this.data;
+    
+    console.log('[Game] Current selected:', selectedCards.length, 'cards');
     
     let newSelectedCards;
     if (isSelected) {
       newSelectedCards = [...selectedCards, { suit, value }];
+      console.log('[Game] Added card:', suit, value);
     } else {
       newSelectedCards = selectedCards.filter(
         card => !(card.suit === suit && card.value === value)
       );
+      console.log('[Game] Removed card:', suit, value);
     }
     
-    this.setData({ selectedCards: newSelectedCards });
+    this.setData({ 
+      selectedCards: newSelectedCards,
+      canPlay: newSelectedCards.length > 0
+    });
+    
+    console.log('[Game] New selected:', newSelectedCards.length, 'cards');
   },
 
   /**

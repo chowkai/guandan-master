@@ -100,9 +100,15 @@ Component<IHandAreaData>({
      * 处理卡牌点击
      */
     onCardTap(event: WechatMiniprogram.CustomEvent) {
-      if (!this.data.canPlay) return;
+      console.log('[HandArea] onCardTap received:', event.detail);
+      
+      if (!this.data.canPlay) {
+        console.log('[HandArea] canPlay is false, returning');
+        return;
+      }
       
       const { suit, value, isSelected } = event.detail;
+      console.log('[HandArea] Triggering cardselect event:', suit, value, isSelected);
       
       // 触发选牌事件
       this.triggerEvent('cardselect', {

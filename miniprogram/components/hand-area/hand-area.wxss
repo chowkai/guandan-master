@@ -8,6 +8,7 @@
   background: rgba(26, 71, 42, 0.3);
   border-radius: var(--radius-lg);
   min-height: 600rpx;
+  z-index: 100;
 }
 
 /* 网格容器 */
@@ -15,6 +16,8 @@
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+  position: relative;
+  z-index: 101;
 }
 
 /* 每一行 */
@@ -25,12 +28,24 @@
   align-items: center;
   gap: 10px;
   min-height: 110rpx;
+  position: relative;
+  z-index: 102;
 }
 
-/* 手牌 */
+/* 手牌 - 关键：确保卡牌可见且可点击 */
 .hand-card {
   flex-shrink: 0;
   transition: transform 0.2s ease;
+  position: relative;
+  z-index: 103;
+  pointer-events: auto;
+}
+
+/* 强制卡牌容器可见 */
+.hand-card .card-container {
+  position: relative !important;
+  z-index: 104 !important;
+  pointer-events: auto !important;
 }
 
 /* 选中效果增强 */

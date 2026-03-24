@@ -71,13 +71,17 @@
   <!-- 底部手牌区 -->
   <view class="bottom-area">
     <!-- 手牌 -->
-    <view class="hand-section">
+    <view class="hand-section" style="background: rgba(255,0,0,0.1); border: 2rpx solid red;">
       <hand-area
         cards="{{myCards}}"
         selected-cards="{{selectedCards}}"
         can-play="{{canPlay}}"
         bind:cardselect="onCardSelect"
       />
+      <!-- 调试：显示手牌数据 -->
+      <view style="font-size: 20rpx; color: yellow; margin-top: 10rpx;">
+        <text>myCards[0]: {{myCards[0].suit}} {{myCards[0].value}}</text>
+      </view>
     </view>
     
     <!-- 操作按钮区 -->
