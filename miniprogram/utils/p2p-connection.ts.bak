@@ -132,7 +132,7 @@ export class P2PConnection {
    * 创建 Offer
    * @returns Promise<RTCSessionDescription>
    */
-  async createOffer(): Promise<RTC(): Promise<RTCSessionDescriptionInit> {
+  async createOffer(): Promise<RTCSessionDescriptionInit> {
     if (!this.pc) {
       throw new Error('[P2PConnection] PeerConnection not initialized');
     }
