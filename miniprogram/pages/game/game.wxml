@@ -1,5 +1,12 @@
 <!-- 游戏页面模板 -->
 <view class="game-container">
+  <!-- 调试信息 -->
+  <view class="debug-info" style="position: fixed; top: 0; left: 0; background: rgba(0,0,0,0.8); color: #0f0; padding: 10rpx; z-index: 9999; font-size: 24rpx;">
+    <text>手牌数：{{myCards.length}}</text>
+    <text>玩家数：{{players.length}}</text>
+    <text>状态：{{gameStatus}}</text>
+  </view>
+  
   <!-- 牌桌背景 -->
   <view class="game-table"></view>
   

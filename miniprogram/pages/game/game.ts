@@ -131,13 +131,18 @@ Page<IGameData>({
     for (let i = 0; i < 27; i++) {
       const suit = suits[i % 4];
       const value = values[i % 13];
-      cards.push({ suit, value });
+      cards.push({ 
+        suit, 
+        value,
+        id: `card_${i}` // 添加唯一 ID
+      });
     }
     
     // 添加王牌
-    cards.push({ suit: 'joker', value: 'BJ' });
-    cards.push({ suit: 'joker', value: 'RJ' });
+    cards.push({ suit: 'joker', value: 'BJ', id: 'bj' });
+    cards.push({ suit: 'joker', value: 'RJ', id: 'rj' });
     
+    console.log('生成的手牌:', cards.length, cards);
     return cards;
   },
 
