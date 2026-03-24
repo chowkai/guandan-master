@@ -6,7 +6,7 @@ interface IGameData {
   mode: string;
   players: any[];
   myCards: any[];
-  selectedCards: any[];
+  selectedCards: { [key: string]: boolean };  // 改为对象，key 为 card.id
   currentPlay: any[];
   playHistory: any[];
   canPlay: boolean;
@@ -19,7 +19,7 @@ Page<IGameData>({
     mode: 'single',
     players: [],
     myCards: [],
-    selectedCards: [],
+    selectedCards: {} as { [key: string]: boolean },
     currentPlay: [],
     playHistory: [],
     canPlay: false,
@@ -126,30 +126,27 @@ Page<IGameData>({
     const cards: any[] = [];
     
     // 两副牌 = 108 张
-    // 每副牌：52 张数字牌 + 2 张王牌
-    // 两副牌：104 张数字牌 + 4 张王牌 = 108 张
     // 每人：27 张（108 ÷ 4 = 27）
     
-    // 生成 25 张数字牌（A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K × 2 副）
     const suits = ['heart', 'diamond', 'spade', 'club'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     
-    // 两副牌，所以每个花色每个值有 2 张
-    for (let deck = 0; deck < 2; deck++) {
-      for (let i = 0; i < 13; i++) {
-        for (let j = 0; j < 4; j++) {
-          if (cards.length < 25) {
-            cards.push({ 
-              suit: suits[j], 
-              value: values[i],
-              id: `card_${deck}_${i}_${j}`
-            });
-          }
+    // 生成 25 张数字牌
+    let count = 0;
+    for (let deck = 0; deck < 2 && count < 25; deck++) {
+      for (let i = 0; i < 13 && count < 25; i++) {
+        for (let j = 0; j < 4 && count < 25; j++) {
+          cards.push({ 
+            suit: suits[j], 
+            value: values[i],
+            id: `card_${count}`
+          });
+          count++;
         }
       }
     }
     
-    // 添加 2 张王牌（每人平均 1 张）
+    // 添加 2 张王牌，总共 27 张
     cards.push({ suit: 'joker', value: 'BJ', id: 'bj' });  // 小王
     cards.push({ suit: 'joker', value: 'RJ', id: 'rj' });  // 大王
     
@@ -158,33 +155,82 @@ Page<IGameData>({
   },
 
   /**
-   * 处理选牌
+   * 处理卡牌点击
    */
-  onCardSelect(event: WechatMiniprogram.CustomEvent) {
-    console.log('[Game] onCardSelect received:', event.detail);
+  onCardTap(event: any) {
+    const cardId = event.currentTarget.dataset.cardId;
+    console.log('[Game] onCardTap:', cardId);
     
-    const { suit, value, isSelected } = event.detail;
-    const { selectedCards, myCards } = this.data;
+    const { selectedCards } = this.data;
+    const newSelectedCards = { ...selectedCards };
     
-    console.log('[Game] Current selected:', selectedCards.length, 'cards');
-    
-    let newSelectedCards;
-    if (isSelected) {
-      newSelectedCards = [...selectedCards, { suit, value }];
-      console.log('[Game] Added card:', suit, value);
+    if (newSelectedCards[cardId]) {
+      delete newSelectedCards[cardId];
+      console.log('[Game] Deselected card:', cardId);
     } else {
-      newSelectedCards = selectedCards.filter(
-        card => !(card.suit === suit && card.value === value)
-      );
-      console.log('[Game] Removed card:', suit, value);
+      newSelectedCards[cardId] = true;
+      console.log('[Game] Selected card:', cardId);
     }
     
     this.setData({ 
       selectedCards: newSelectedCards,
-      canPlay: newSelectedCards.length > 0
+      canPlay: Object.keys(newSelectedCards).length > 0
+    });
+  },
+
+  /**
+   * 获取花色符号
+   */
+  getSuitSymbol(suit: string): string {
+    const symbols: Record<string, string> = {
+      heart: '♥',
+      diamond: '♦',
+      spade: '♠',
+      club: '♣',
+      joker: '🃏'
+    };
+    return symbols[suit] || '♥';
+  },
+
+  /**
+   * 不出
+   */
+  onPass() {
+    console.log('[Game] 不出');
+    this.setData({ canPlay: false });
+  },
+
+  /**
+   * 提示
+   */
+  onHint() {
+    console.log('[Game] 提示');
+  },
+
+  /**
+   * 出牌
+   */
+  onPlayCards() {
+    const { selectedCards } = this.data;
+    const cardIds = Object.keys(selectedCards);
+    
+    if (cardIds.length === 0) {
+      wx.showToast({ title: '请选择要出的牌', icon: 'none' });
+      return;
+    }
+    
+    console.log('[Game] 出牌:', cardIds.length, '张');
+    
+    // 移除已出的牌
+    const newMyCards = this.data.myCards.filter(card => !selectedCards[card.id]);
+    
+    this.setData({
+      myCards: newMyCards,
+      selectedCards: {},
+      canPlay: false
     });
     
-    console.log('[Game] New selected:', newSelectedCards.length, 'cards');
+    wx.showToast({ title: `出了 ${cardIds.length} 张牌`, icon: 'success' });
   },
 
   /**
