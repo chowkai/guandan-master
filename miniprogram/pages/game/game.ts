@@ -6,12 +6,14 @@ interface IGameData {
   mode: string;
   players: any[];
   myCards: any[];
-  selectedCards: { [key: string]: boolean };  // 改为对象，key 为 card.id
+  selectedCards: { [key: string]: boolean };
+  selectedCount: number;
   currentPlay: any[];
   playHistory: any[];
   canPlay: boolean;
   gameStatus: string;
   currentPlayer: number;
+  firstPlayer: number;
 }
 
 Page<IGameData>({
@@ -20,11 +22,13 @@ Page<IGameData>({
     players: [],
     myCards: [],
     selectedCards: {} as { [key: string]: boolean },
+    selectedCount: 0,
     currentPlay: [],
     playHistory: [],
     canPlay: false,
     gameStatus: 'waiting',
-    currentPlayer: 0
+    currentPlayer: 0,
+    firstPlayer: 0
   },
 
   onLoad(options) {
@@ -167,19 +171,22 @@ Page<IGameData>({
     // 发牌
     this.dealCards();
     
-    // 设置游戏状态
+    // 设置游戏状态 - 先显示首发提示
     this.setData({
-      gameStatus: 'playing',
+      gameStatus: 'starting',
+      firstPlayer: firstPlayer,
       currentPlayer: firstPlayer,
-      canPlay: firstPlayer === 0 // 只有自己是首发才能出牌
+      canPlay: firstPlayer === 0
     });
     
     console.log('[Game] 游戏开始，首发玩家:', firstPlayer);
-    wx.showToast({ 
-      title: `第${firstPlayer + 1}家首发`, 
-      icon: 'none',
-      duration: 1500
-    });
+    
+    // 1.5 秒后切换到正常游戏状态
+    setTimeout(() => {
+      this.setData({
+        gameStatus: 'playing'
+      });
+    }, 1500);
   },
 
   /**
@@ -188,6 +195,12 @@ Page<IGameData>({
   onCardTap(event: any) {
     const cardId = event.currentTarget.dataset.cardId;
     console.log('[Game] onCardTap:', cardId);
+    
+    // 检查是否是自己的回合
+    if (this.data.currentPlayer !== 0) {
+      wx.showToast({ title: '还没轮到你', icon: 'none' });
+      return;
+    }
     
     const { selectedCards } = this.data;
     const newSelectedCards = { ...selectedCards };
@@ -200,10 +213,15 @@ Page<IGameData>({
       console.log('[Game] Selected card:', cardId);
     }
     
+    const count = Object.keys(newSelectedCards).length;
+    
     this.setData({ 
       selectedCards: newSelectedCards,
-      canPlay: Object.keys(newSelectedCards).length > 0
+      selectedCount: count,
+      canPlay: count > 0
     });
+    
+    console.log('[Game] Selected count:', count);
   },
 
   /**
@@ -241,8 +259,13 @@ Page<IGameData>({
    * 出牌
    */
   onPlayCards() {
-    const { selectedCards } = this.data;
+    const { selectedCards, currentPlayer } = this.data;
     const cardIds = Object.keys(selectedCards);
+    
+    if (currentPlayer !== 0) {
+      wx.showToast({ title: '还没轮到你', icon: 'none' });
+      return;
+    }
     
     if (cardIds.length === 0) {
       wx.showToast({ title: '请选择要出的牌', icon: 'none' });
@@ -257,6 +280,7 @@ Page<IGameData>({
     this.setData({
       myCards: newMyCards,
       selectedCards: {},
+      selectedCount: 0,
       canPlay: false
     });
     
