@@ -1,0 +1,31 @@
+<!-- 手牌区组件模板 -->
+<view class="hand-area-container">
+  <view class="hand-area-grid" style="{{getGridStyle()}}">
+    <!-- 5 行网格布局 -->
+    <view 
+      class="hand-row" 
+      wx:for="{{gridRows}}" 
+      wx:key="index"
+      style="{{getRowStyle()}}"
+    >
+      <!-- 每行的卡牌 -->
+      <card
+        wx:for="{{item}}"
+        wx:key="*this"
+        class="hand-card"
+        suit="{{item.suit}}"
+        value="{{item.value}}"
+        isSelected="{{isCardSelected(item.suit, item.value)}}"
+        isPlayable="{{canPlay}}"
+        cardWidth="{{cardWidth}}"
+        cardHeight="{{cardHeight}}"
+        bind:cardtap="onCardTap"
+      />
+    </view>
+  </view>
+  
+  <!-- 空手牌提示 -->
+  <view class="hand-area-empty" wx:if="{{cards.length === 0}}">
+    <text>暂无手牌</text>
+  </view>
+</view>

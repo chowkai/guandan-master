@@ -1,0 +1,221 @@
+/**
+ * 主页面样式
+ */
+.index-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--deep-green) 0%, var(--light-green) 100%);
+  padding: var(--spacing-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景装饰 */
+.bg-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* 用户信息区域 */
+.user-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(10rpx);
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--white);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--white);
+}
+
+.user-welcome {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+.login-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.login-btn text {
+  font-size: var(--font-size-md);
+  color: var(--white);
+}
+
+/* 标题区域 */
+.title-section {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+}
+
+.game-title {
+  display: block;
+  font-size: 120rpx;
+  font-weight: bold;
+  color: var(--white);
+  text-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.3);
+  letter-spacing: 8rpx;
+}
+
+.game-subtitle {
+  display: block;
+  font-size: var(--font-size-md);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--spacing-sm);
+  letter-spacing: 4rpx;
+}
+
+/* 菜单区域 */
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+}
+
+.menu-item.primary {
+  background: linear-gradient(135deg, var(--active-green) 0%, #2db84f 100%);
+  box-shadow: 0 8rpx 24rpx rgba(52, 199, 89, 0.4);
+}
+
+.menu-item.secondary {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.menu-item.tertiary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-icon {
+  font-size: 64rpx;
+  margin-bottom: var(--spacing-xs);
+}
+
+.menu-text {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--white);
+}
+
+.menu-desc {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+/* 最近游戏区域 */
+.recent-section {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10rpx);
+}
+
+.section-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--white);
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.recent-name {
+  font-size: var(--font-size-sm);
+  color: var(--white);
+}
+
+.recent-time {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 底部设置 */
+.footer-section {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.settings-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-xl);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.settings-btn text {
+  font-size: var(--font-size-md);
+  color: var(--white);
+}

@@ -1,0 +1,30 @@
+<!-- 卡牌组件模板 -->
+<view 
+  class="card-container {{isSelected ? 'selected' : ''}} {{!isPlayable ? 'disabled' : ''}}"
+  style="{{getCardStyle()}}"
+  bindtap="onTap"
+>
+  <!-- 卡牌背景 -->
+  <view class="card-bg"></view>
+  
+  <!-- 卡牌内容 -->
+  <view class="card-content" wx:if="{{!isJoker()}}">
+    <!-- 左上角：字 + 花竖排 -->
+    <view class="card-corner-top-left">
+      <text class="card-value">{{value}}</text>
+      <text class="card-suit" style="color: {{getSuitColor()}}">{{getSuitSymbol()}}</text>
+    </view>
+    
+    <!-- 中间：花色偏右下 -->
+    <view class="card-center">
+      <text class="card-suit-large" style="color: {{getSuitColor()}}">{{getSuitSymbol()}}</text>
+    </view>
+    
+    <!-- 右下角：留空 -->
+  </view>
+  
+  <!-- 王牌显示 -->
+  <view class="card-content joker" wx:if="{{isJoker()}}">
+    <text class="card-value-joker">{{value === 'BJ' ? '小王' : '大王'}}</text>
+  </view>
+</view>

@@ -1,0 +1,147 @@
+/**
+ * 按钮组件样式
+ */
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+/* 按钮尺寸 */
+.btn-small {
+  padding: 12rpx 24rpx;
+  font-size: var(--font-size-sm);
+  min-height: 64rpx;
+}
+
+.btn-medium {
+  padding: 16rpx 32rpx;
+  font-size: var(--font-size-md);
+  min-height: 80rpx;
+}
+
+.btn-large {
+  padding: 20rpx 40rpx;
+  font-size: var(--font-size-lg);
+  min-height: 96rpx;
+}
+
+/* 主按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--active-green) 0%, #2db84f 100%);
+  color: var(--white);
+  box-shadow: 0 4rpx 12rpx rgba(52, 199, 89, 0.4);
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: var(--white);
+  color: var(--dark-gray);
+  border: 2rpx solid var(--gray);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 操作按钮 */
+.btn-action {
+  background: linear-gradient(135deg, var(--light-green) 0%, var(--deep-green) 100%);
+  color: var(--white);
+  box-shadow: 0 4rpx 12rpx rgba(45, 90, 63, 0.4);
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: linear-gradient(135deg, var(--red) 0%, #b71c1c 100%);
+  color: var(--white);
+  box-shadow: 0 4rpx 12rpx rgba(211, 47, 47, 0.4);
+}
+
+/* 警告按钮 */
+.btn-warning {
+  background: linear-gradient(135deg, var(--yellow) 0%, #ff9800 100%);
+  color: var(--dark-gray);
+  box-shadow: 0 4rpx 12rpx rgba(255, 193, 7, 0.4);
+}
+
+/* 禁用状态 */
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-disabled.btn-primary,
+.btn-disabled.btn-action,
+.btn-disabled.btn-danger,
+.btn-disabled.btn-warning {
+  background: var(--gray);
+}
+
+/* 加载中状态 */
+.btn-loading {
+  pointer-events: none;
+}
+
+.btn-loading-spinner {
+  margin-right: 12rpx;
+}
+
+.spinner {
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 点击效果 */
+.btn-hover {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.btn-primary.btn-hover {
+  box-shadow: 0 2rpx 8rpx rgba(52, 199, 89, 0.4);
+}
+
+/* 全屏宽度 */
+.btn-block {
+  width: 100%;
+  display: flex;
+}
+
+/* 按钮文字 */
+.btn-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 按钮图标 */
+.btn-icon {
+  margin-left: 8rpx;
+  display: flex;
+  align-items: center;
+}
+
+/* 按钮组 */
+.btn-group {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.btn-group .btn {
+  flex: 1;
+}

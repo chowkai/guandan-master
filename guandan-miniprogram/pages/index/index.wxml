@@ -1,0 +1,77 @@
+<!-- 主页面模板 -->
+<view class="index-container">
+  <!-- 背景装饰 -->
+  <view class="bg-decoration"></view>
+  
+  <!-- 顶部用户信息 -->
+  <view class="user-section">
+    <view class="user-info" wx:if="{{hasLogin && userInfo}}">
+      <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+      <view class="user-details">
+        <text class="user-name">{{userInfo.nickName}}</text>
+        <text class="user-welcome">欢迎回来</text>
+      </view>
+    </view>
+    
+    <view class="login-btn" wx:else bindtap="onLogin">
+      <text>点击登录</text>
+    </view>
+  </view>
+  
+  <!-- 游戏标题 -->
+  <view class="title-section">
+    <text class="game-title">掼蛋</text>
+    <text class="game-subtitle">经典扑克 欢乐对战</text>
+  </view>
+  
+  <!-- 主菜单按钮 -->
+  <view class="menu-section">
+    <!-- 开始游戏 -->
+    <view class="menu-item primary" bindtap="onStartGame">
+      <view class="menu-icon">🎮</view>
+      <text class="menu-text">开始游戏</text>
+      <text class="menu-desc">单机模式</text>
+    </view>
+    
+    <!-- P2P 联机 -->
+    <view class="menu-item secondary" bindtap="onP2PConnect">
+      <view class="menu-icon">🌐</view>
+      <text class="menu-text">P2P 联机</text>
+      <text class="menu-desc">好友对战</text>
+    </view>
+    
+    <!-- 创建房间 -->
+    <view class="menu-item tertiary" bindtap="onCreateRoom">
+      <view class="menu-icon">➕</view>
+      <text class="menu-text">创建房间</text>
+      <text class="menu-desc">邀请好友</text>
+    </view>
+    
+    <!-- 加入房间 -->
+    <view class="menu-item tertiary" bindtap="onJoinRoom">
+      <view class="menu-icon">🚪</view>
+      <text class="menu-text">加入房间</text>
+      <text class="menu-desc">输入房号</text>
+    </view>
+  </view>
+  
+  <!-- 最近房间 -->
+  <view class="recent-section" wx:if="{{recentRooms.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最近游戏</text>
+    </view>
+    <view class="recent-list">
+      <view class="recent-item" wx:for="{{recentRooms}}" wx:key="id">
+        <text class="recent-name">{{item.roomName}}</text>
+        <text class="recent-time">{{item.lastPlayTime}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 底部设置 -->
+  <view class="footer-section">
+    <view class="settings-btn" bindtap="onOpenSettings">
+      <text>⚙️ 设置</text>
+    </view>
+  </view>
+</view>

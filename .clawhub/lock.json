@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1773987783870
+    },
+    "trello": {
+      "version": "1.0.0",
+      "installedAt": 1773989821159
+    },
+    "obsidian": {
+      "version": "1.0.0",
+      "installedAt": 1773989881681
+    }
+  }
+}
