@@ -82,6 +82,25 @@
   background-color: var(--light-gray);
 }
 
+/* 头像占位符 */
+.player-avatar-placeholder {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--deep-green) 0%, var(--light-green) 100%);
+  border: 4rpx solid var(--white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+}
+
+.player-avatar-placeholder text {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: var(--white);
+}
+
 /* 地主标识 */
 .player-landlord-badge {
   position: absolute;

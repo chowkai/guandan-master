@@ -1,14 +1,21 @@
-<!-- 游戏页面模板 -->
-<view class="game-container">
-  <!-- 牌桌背景 -->
-  <view class="game-table"></view>
-  
-  <!-- 调试信息（移到右下角，避开刘海屏） -->
-  <view class="debug-info" style="position: fixed; bottom: 20rpx; right: 20rpx; background: rgba(0,0,0,0.8); color: #0f0; padding: 10rpx 20rpx; z-index: 9999; font-size: 24rpx; border-radius: 8rpx;">
-    <text>手牌：{{myCards.length}}张</text>
-    <text style="margin-left: 20rpx;">玩家：{{players.length}}人</text>
-    <text style="margin-left: 20rpx;">状态：{{gameStatus}}</text>
+<!-- 游戏页面模板 - 调试版本 -->
+<view class="game-container" style="padding: 20rpx;">
+  <!-- 调试信息 -->
+  <view style="background: rgba(0,0,0,0.8); color: #0f0; padding: 20rpx; margin-bottom: 20rpx; border-radius: 8rpx;">
+    <text>手牌数：{{myCards.length}}</text>
+    <text style="margin-left: 40rpx;">玩家数：{{players.length}}</text>
+    <text style="margin-left: 40rpx;">状态：{{gameStatus}}</text>
   </view>
+  
+  <!-- 手牌列表 -->
+  <view style="background: rgba(255,0,0,0.1); border: 2rpx solid red; padding: 20rpx;">
+    <text style="color: yellow; font-size: 28rpx;">手牌详情:</text>
+    <view wx:for="{{myCards}}" wx:key="id" wx:for-item="card" 
+          style="display: inline-block; background: white; padding: 10rpx; margin: 5rpx; border-radius: 8rpx;">
+      <text>{{card.value}}{{card.suit}}</text>
+    </view>
+  </view>
+</view>
   
   <!-- 顶部玩家 (对家) -->
   <view class="player-top-area">
