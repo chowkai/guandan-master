@@ -155,6 +155,34 @@ Page<IGameData>({
   },
 
   /**
+   * 初始化游戏
+   */
+  initGame() {
+    // 初始化玩家
+    this.initPlayers();
+    
+    // 随机指定首发玩家
+    const firstPlayer = Math.floor(Math.random() * 4);
+    
+    // 发牌
+    this.dealCards();
+    
+    // 设置游戏状态
+    this.setData({
+      gameStatus: 'playing',
+      currentPlayer: firstPlayer,
+      canPlay: firstPlayer === 0 // 只有自己是首发才能出牌
+    });
+    
+    console.log('[Game] 游戏开始，首发玩家:', firstPlayer);
+    wx.showToast({ 
+      title: `第${firstPlayer + 1}家首发`, 
+      icon: 'none',
+      duration: 1500
+    });
+  },
+
+  /**
    * 处理卡牌点击
    */
   onCardTap(event: any) {
@@ -198,6 +226,7 @@ Page<IGameData>({
   onPass() {
     console.log('[Game] 不出');
     this.setData({ canPlay: false });
+    this.nextPlayer();
   },
 
   /**
@@ -205,6 +234,7 @@ Page<IGameData>({
    */
   onHint() {
     console.log('[Game] 提示');
+    wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
   /**
@@ -231,21 +261,25 @@ Page<IGameData>({
     });
     
     wx.showToast({ title: `出了 ${cardIds.length} 张牌`, icon: 'success' });
+    
+    // 轮到下家
+    setTimeout(() => this.nextPlayer(), 1000);
   },
 
   /**
-   * 出牌
+   * 下一个玩家
    */
-  onPlayCards() {
-    const { selectedCards, canPlay } = this.data;
+  nextPlayer() {
+    const { currentPlayer } = this.data;
+    const next = (currentPlayer + 1) % 4;
     
-    if (!canPlay || selectedCards.length === 0) {
-      wx.showToast({
-        title: '请选择要出的牌',
-        icon: 'none'
-      });
-      return;
-    }
+    this.setData({ 
+      currentPlayer: next,
+      canPlay: next === 0 // 轮到自己时可以出牌
+    });
+    
+    console.log('[Game] 轮到玩家:', next);
+  },
     
     // 出牌逻辑
     console.log('出牌:', selectedCards);
