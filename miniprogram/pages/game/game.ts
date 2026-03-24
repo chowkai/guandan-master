@@ -120,29 +120,40 @@ Page<IGameData>({
   },
 
   /**
-   * 生成示例手牌
+   * 生成示例手牌（两副牌 108 张，每人 27 张）
    */
   generateSampleCards(): any[] {
-    const suits = ['heart', 'diamond', 'spade', 'club'];
-    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const cards: any[] = [];
     
-    // 生成示例牌
-    for (let i = 0; i < 27; i++) {
-      const suit = suits[i % 4];
-      const value = values[i % 13];
-      cards.push({ 
-        suit, 
-        value,
-        id: `card_${i}` // 添加唯一 ID
-      });
+    // 两副牌 = 108 张
+    // 每副牌：52 张数字牌 + 2 张王牌
+    // 两副牌：104 张数字牌 + 4 张王牌 = 108 张
+    // 每人：27 张（108 ÷ 4 = 27）
+    
+    // 生成 25 张数字牌（A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K × 2 副）
+    const suits = ['heart', 'diamond', 'spade', 'club'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    
+    // 两副牌，所以每个花色每个值有 2 张
+    for (let deck = 0; deck < 2; deck++) {
+      for (let i = 0; i < 13; i++) {
+        for (let j = 0; j < 4; j++) {
+          if (cards.length < 25) {
+            cards.push({ 
+              suit: suits[j], 
+              value: values[i],
+              id: `card_${deck}_${i}_${j}`
+            });
+          }
+        }
+      }
     }
     
-    // 添加王牌
-    cards.push({ suit: 'joker', value: 'BJ', id: 'bj' });
-    cards.push({ suit: 'joker', value: 'RJ', id: 'rj' });
+    // 添加 2 张王牌（每人平均 1 张）
+    cards.push({ suit: 'joker', value: 'BJ', id: 'bj' });  // 小王
+    cards.push({ suit: 'joker', value: 'RJ', id: 'rj' });  // 大王
     
-    console.log('生成的手牌:', cards.length, cards);
+    console.log('生成的手牌:', cards.length, '张');
     return cards;
   },
 

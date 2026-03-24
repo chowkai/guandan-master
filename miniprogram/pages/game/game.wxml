@@ -1,14 +1,14 @@
 <!-- 游戏页面模板 -->
 <view class="game-container">
-  <!-- 调试信息 -->
-  <view class="debug-info" style="position: fixed; top: 0; left: 0; background: rgba(0,0,0,0.8); color: #0f0; padding: 10rpx; z-index: 9999; font-size: 24rpx;">
-    <text>手牌数：{{myCards.length}}</text>
-    <text>玩家数：{{players.length}}</text>
-    <text>状态：{{gameStatus}}</text>
-  </view>
-  
   <!-- 牌桌背景 -->
   <view class="game-table"></view>
+  
+  <!-- 调试信息（移到右下角，避开刘海屏） -->
+  <view class="debug-info" style="position: fixed; bottom: 20rpx; right: 20rpx; background: rgba(0,0,0,0.8); color: #0f0; padding: 10rpx 20rpx; z-index: 9999; font-size: 24rpx; border-radius: 8rpx;">
+    <text>手牌：{{myCards.length}}张</text>
+    <text style="margin-left: 20rpx;">玩家：{{players.length}}人</text>
+    <text style="margin-left: 20rpx;">状态：{{gameStatus}}</text>
+  </view>
   
   <!-- 顶部玩家 (对家) -->
   <view class="player-top-area">
