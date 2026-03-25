@@ -143,7 +143,7 @@
   text-align: center;
 }
 
-.play-area-empty text {
+.play-area-empty .empty-text {
   font-size: var(--font-size-md);
   color: var(--gray);
 }

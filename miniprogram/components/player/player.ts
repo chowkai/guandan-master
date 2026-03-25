@@ -52,13 +52,8 @@ Component<IPlayerData>({
   },
 
   data: {
-    playerId: '',
-    playerName: '',
-    avatarUrl: '',
-    cardCount: 0,
-    isSelf: false,
-    isLandlord: false,
-    position: 'bottom'
+    // 内部状态（不与 properties 重名）
+    // 所有状态通过 properties 管理
   },
 
   methods: {

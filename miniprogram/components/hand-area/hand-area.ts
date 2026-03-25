@@ -59,14 +59,7 @@ Component<IHandAreaData>({
   },
 
   data: {
-    cards: [],
-    selectedCards: [],
-    maxRows: 5,
-    maxCols: 5,
-    cardWidth: 70,
-    cardHeight: 98,
-    cardGap: 10,
-    canPlay: true,
+    // 内部状态（不与 properties 重名）
     gridRows: [] as any[]
   },
 

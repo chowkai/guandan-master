@@ -46,12 +46,8 @@ Component<ICardData>({
   },
 
   data: {
-    suit: 'heart',
-    value: 'A',
-    isSelected: false,
-    isPlayable: true,
-    cardWidth: 80,
-    cardHeight: 112
+    // 内部状态（不与 properties 重名）
+    // 所有状态通过 properties 管理
   },
 
   methods: {

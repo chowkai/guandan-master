@@ -39,11 +39,8 @@ Component<IPlayAreaData>({
   },
 
   data: {
-    playHistory: [],
-    currentPlay: [],
-    isExpanded: false,
-    maxVisibleRounds: 5,
-    showPlayerName: true
+    // 内部状态（不与 properties 重名）
+    visibleHistory: [] as any[]
   },
 
   methods: {
