@@ -56,32 +56,28 @@ Component<ICardData>({
 
   methods: {
     /**
-     * 处理卡牌点击
+     * 处理卡牌点击 - 修复 BUG-010
      */
-    onTap() {
-      console.log('[Card] onTap called, isPlayable:', this.data.isPlayable);
+    onTap(event: WechatMiniprogram.TouchEvent) {
+      if (!this.data.isPlayable) return;
       
-      if (!this.data.isPlayable) {
-        console.log('[Card] Card not playable, returning');
-        return;
-      }
-      
+      const { suit, value } = this.data;
+      const cardId = `${suit}-${value}`;
       const newIsSelected = !this.data.isSelected;
-      console.log('[Card] Toggling selection:', this.data.suit, this.data.value, '->', newIsSelected);
       
       this.setData({
         isSelected: newIsSelected
       });
 
-      // 触发选牌事件
+      // 触发选牌事件 - 传递 cardId
       this.triggerEvent('cardtap', {
-        suit: this.data.suit,
-        value: this.data.value,
-        isSelected: newIsSelected,
-        id: this.data.id
+        cardId,
+        suit,
+        value,
+        isSelected: newIsSelected
       });
       
-      console.log('[Card] Event triggered: cardtap');
+      console.log('卡牌点击:', cardId, '选中:', newIsSelected);
     },
 
     /**

@@ -6,14 +6,14 @@ interface IGameData {
   mode: string;
   players: any[];
   myCards: any[];
-  selectedCards: { [key: string]: boolean };
-  selectedCount: number;
+  selectedCards: any[];
   currentPlay: any[];
   playHistory: any[];
   canPlay: boolean;
   gameStatus: string;
   currentPlayer: number;
-  firstPlayer: number;
+  infoText: string; // 信息提示 - 修复 BUG-011
+  isFirstTurn: boolean; // 是否首发 - 修复 BUG-011
 }
 
 Page<IGameData>({
@@ -21,14 +21,14 @@ Page<IGameData>({
     mode: 'single',
     players: [],
     myCards: [],
-    selectedCards: {} as { [key: string]: boolean },
-    selectedCount: 0,
+    selectedCards: [],
     currentPlay: [],
     playHistory: [],
     canPlay: false,
     gameStatus: 'waiting',
     currentPlayer: 0,
-    firstPlayer: 0
+    infoText: '', // 信息提示 - 修复 BUG-011
+    isFirstTurn: false // 是否首发 - 修复 BUG-011
   },
 
   onLoad(options) {
@@ -49,6 +49,34 @@ Page<IGameData>({
 
   onUnload() {
     // 页面卸载
+  },
+
+  /**
+   * 初始化游戏 - 修复 BUG-011
+   */
+  initGame() {
+    // 初始化玩家
+    this.initPlayers();
+    
+    // 初始化牌局
+    this.dealCards();
+    
+    // 随机指定首发玩家 - 修复 BUG-011
+    const firstPlayer = Math.floor(Math.random() * 4);
+    const firstPlayerName = firstPlayer === 0 ? '我' : `玩家${firstPlayer + 1}`;
+    
+    // 设置游戏状态
+    this.setData({
+      gameStatus: 'playing',
+      currentPlayer: firstPlayer,
+      infoText: `${firstPlayerName} 首发`, // 首发提示
+      isFirstTurn: true // 高亮显示
+    });
+    
+    // 3 秒后恢复正常显示
+    setTimeout(() => {
+      this.updateInfoText();
+    }, 3000);
   },
 
   /**
@@ -107,126 +135,150 @@ Page<IGameData>({
   },
 
   /**
-   * 生成示例手牌（两副牌 108 张，每人 27 张）
+   * 生成示例手牌
    */
   generateSampleCards(): any[] {
-    const cards: any[] = [];
-    
-    // 两副牌 = 108 张
-    // 每人：27 张（108 ÷ 4 = 27）
-    
     const suits = ['heart', 'diamond', 'spade', 'club'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const cards: any[] = [];
     
-    // 生成 25 张数字牌
-    let count = 0;
-    for (let deck = 0; deck < 2 && count < 25; deck++) {
-      for (let i = 0; i < 13 && count < 25; i++) {
-        for (let j = 0; j < 4 && count < 25; j++) {
-          cards.push({ 
-            suit: suits[j], 
-            value: values[i],
-            id: `card_${count}`
-          });
-          count++;
-        }
-      }
+    // 生成示例牌
+    for (let i = 0; i < 27; i++) {
+      const suit = suits[i % 4];
+      const value = values[i % 13];
+      cards.push({ suit, value });
     }
     
-    // 添加 2 张王牌，总共 27 张
-    cards.push({ suit: 'joker', value: 'BJ', id: 'bj' });  // 小王
-    cards.push({ suit: 'joker', value: 'RJ', id: 'rj' });  // 大王
+    // 添加王牌
+    cards.push({ suit: 'joker', value: 'BJ' });
+    cards.push({ suit: 'joker', value: 'RJ' });
     
-    console.log('生成的手牌:', cards.length, '张');
     return cards;
   },
 
   /**
-   * 初始化游戏
+   * 处理选牌 - 修复 BUG-010
    */
-  initGame() {
-    // 初始化玩家
-    this.initPlayers();
+  onCardSelect(event: WechatMiniprogram.CustomEvent) {
+    const { cardId, suit, value, isSelected } = event.detail;
+    const { selectedCards } = this.data;
     
-    // 随机指定首发玩家
-    const firstPlayer = Math.floor(Math.random() * 4);
+    // 使用 cardId 进行选择
+    if (isSelected) {
+      // 选中：添加 cardId
+      if (selectedCards.length >= 5) {
+        wx.showToast({ title: '最多选 5 张牌', icon: 'none' });
+        return;
+      }
+      selectedCards.push(cardId);
+      console.log('选中卡牌:', cardId);
+    } else {
+      // 反选：移除 cardId
+      const index = selectedCards.indexOf(cardId);
+      if (index > -1) {
+        selectedCards.splice(index, 1);
+        console.log('反选卡牌:', cardId);
+      }
+    }
     
-    // 发牌
-    this.dealCards();
-    
-    // 设置游戏状态 - 先显示首发提示
-    this.setData({
-      gameStatus: 'starting',
-      firstPlayer: firstPlayer,
-      currentPlayer: firstPlayer,
-      canPlay: firstPlayer === 0
-    });
-    
-    console.log('[Game] 游戏开始，首发玩家:', firstPlayer);
-    
-    // 1.5 秒后切换到正常游戏状态
-    setTimeout(() => {
-      this.setData({
-        gameStatus: 'playing'
-      });
-    }, 1500);
+    this.setData({ selectedCards });
   },
 
   /**
-   * 处理卡牌点击
+   * 卡牌点击事件处理 - 修复 BUG-010
    */
-  onCardTap(event: any) {
-    const cardId = event.currentTarget.dataset.cardId;
-    console.log('[Game] onCardTap:', cardId);
+  onCardTap(event: WechatMiniprogram.TouchEvent) {
+    const { cardId } = event.currentTarget.dataset;
+    if (!cardId) return;
     
-    // 检查是否是自己的回合
-    if (this.data.currentPlayer !== 0) {
-      wx.showToast({ title: '还没轮到你', icon: 'none' });
+    this.toggleCardSelection(cardId);
+  },
+
+  /**
+   * 切换卡牌选中状态 - 修复 BUG-010
+   * 选中：向上移动 12px
+   * 反选：恢复原位
+   */
+  toggleCardSelection(cardId: string) {
+    const { selectedCards, myCards } = this.data;
+    const index = selectedCards.indexOf(cardId);
+    
+    if (index > -1) {
+      // 反选：移除
+      selectedCards.splice(index, 1);
+      console.log('反选卡牌:', cardId);
+    } else {
+      // 选中：添加（最多 5 张）
+      if (selectedCards.length >= 5) {
+        wx.showToast({ title: '最多选 5 张牌', icon: 'none' });
+        return;
+      }
+      selectedCards.push(cardId);
+      console.log('选中卡牌:', cardId);
+    }
+    
+    this.setData({ selectedCards });
+  },
+
+  /**
+   * 出牌
+   */
+  onPlayCards() {
+    const { selectedCards, canPlay } = this.data;
+    
+    if (!canPlay || selectedCards.length === 0) {
+      wx.showToast({
+        title: '请选择要出的牌',
+        icon: 'none'
+      });
       return;
     }
     
-    const { selectedCards } = this.data;
-    const newSelectedCards = { ...selectedCards };
+    // 出牌逻辑
+    console.log('出牌:', selectedCards);
     
-    if (newSelectedCards[cardId]) {
-      delete newSelectedCards[cardId];
-      console.log('[Game] Deselected card:', cardId);
-    } else {
-      newSelectedCards[cardId] = true;
-      console.log('[Game] Selected card:', cardId);
-    }
+    // 更新手牌
+    const { myCards } = this.data;
+    const newMyCards = myCards.filter(card => 
+      !selectedCards.some(selected => 
+        selected.suit === card.suit && selected.value === card.value
+      )
+    );
     
-    const count = Object.keys(newSelectedCards).length;
+    // 更新出牌记录
+    const { playHistory } = this.data;
+    const newPlayHistory = [
+      ...playHistory,
+      {
+        round: playHistory.length + 1,
+        playerName: '我',
+        playType: this.detectPlayType(selectedCards),
+        cards: selectedCards
+      }
+    ];
     
-    this.setData({ 
-      selectedCards: newSelectedCards,
-      selectedCount: count,
-      canPlay: count > 0
+    this.setData({
+      myCards: newMyCards,
+      selectedCards: [],
+      currentPlay: selectedCards,
+      playHistory: newPlayHistory,
+      canPlay: false
     });
     
-    console.log('[Game] Selected count:', count);
-  },
-
-  /**
-   * 获取花色符号
-   */
-  getSuitSymbol(suit: string): string {
-    const symbols: Record<string, string> = {
-      heart: '♥',
-      diamond: '♦',
-      spade: '♠',
-      club: '♣',
-      joker: '🃏'
-    };
-    return symbols[suit] || '♥';
+    // 模拟其他玩家出牌
+    setTimeout(() => {
+      this.simulateOtherPlayerPlay();
+    }, 2000);
   },
 
   /**
    * 不出
    */
   onPass() {
-    console.log('[Game] 不出');
+    console.log('不出');
     this.setData({ canPlay: false });
+    
+    // 轮到下家
     this.nextPlayer();
   },
 
@@ -234,58 +286,8 @@ Page<IGameData>({
    * 提示
    */
   onHint() {
-    console.log('[Game] 提示');
-    wx.showToast({ title: '功能开发中', icon: 'none' });
-  },
-
-  /**
-   * 出牌
-   */
-  onPlayCards() {
-    const { selectedCards, currentPlayer, myCards } = this.data;
-    const cardIds = Object.keys(selectedCards);
-    
-    if (currentPlayer !== 0) {
-      wx.showToast({ title: '还没轮到你', icon: 'none' });
-      return;
-    }
-    
-    if (cardIds.length === 0) {
-      wx.showToast({ title: '请选择要出的牌', icon: 'none' });
-      return;
-    }
-    
-    console.log('[Game] 出牌:', cardIds.length, '张');
-    
-    // 移除已出的牌
-    const newMyCards = myCards.filter(card => !selectedCards[card.id]);
-    
-    // 更新出牌记录
-    const selectedCardList = myCards.filter(card => selectedCards[card.id]);
-    const { playHistory } = this.data;
-    const newPlayHistory = [
-      ...playHistory,
-      {
-        round: playHistory.length + 1,
-        playerName: '我',
-        playType: this.detectPlayType(selectedCardList),
-        cards: selectedCardList
-      }
-    ];
-    
-    this.setData({
-      myCards: newMyCards,
-      selectedCards: {},
-      selectedCount: 0,
-      canPlay: false,
-      currentPlay: selectedCardList,
-      playHistory: newPlayHistory
-    });
-    
-    wx.showToast({ title: `出了 ${cardIds.length} 张牌`, icon: 'success' });
-    
-    // 轮到下家
-    setTimeout(() => this.nextPlayer(), 1000);
+    console.log('提示');
+    // TODO: 实现提示逻辑
   },
 
   /**
@@ -299,17 +301,37 @@ Page<IGameData>({
   },
 
   /**
+   * 模拟其他玩家出牌
+   */
+  simulateOtherPlayerPlay() {
+    // 模拟逻辑
+    this.setData({
+      canPlay: true,
+      currentPlayer: 0
+    });
+  },
+
+  /**
    * 下一个玩家
    */
   nextPlayer() {
     const { currentPlayer } = this.data;
     const next = (currentPlayer + 1) % 4;
+    this.setData({ currentPlayer: next });
+    this.updateInfoText();
+  },
+
+  /**
+   * 更新信息提示 - 修复 BUG-011
+   */
+  updateInfoText() {
+    const { currentPlayer } = this.data;
+    const playerNames = ['我', '玩家 2', '玩家 3', '玩家 4'];
+    const playerName = playerNames[currentPlayer] || `玩家${currentPlayer + 1}`;
     
-    this.setData({ 
-      currentPlayer: next,
-      canPlay: next === 0 // 轮到自己时可以出牌
+    this.setData({
+      infoText: `当前出牌：${playerName}`,
+      isFirstTurn: false
     });
-    
-    console.log('[Game] 轮到玩家:', next);
   }
 });

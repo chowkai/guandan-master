@@ -4,14 +4,9 @@
   <view class="player-avatar-wrapper">
     <image 
       class="player-avatar" 
-      src="{{avatarUrl ? avatarUrl : ''}}" 
+      src="{{avatarUrl || '/assets/default-avatar.png'}}" 
       mode="aspectFill"
-      wx:if="{{avatarUrl}}"
     />
-    <!-- 无头像时显示占位符 -->
-    <view class="player-avatar-placeholder" wx:else>
-      <text>{{playerName ? playerName[0] : '玩'}}</text>
-    </view>
     <!-- 地主标识 -->
     <view class="player-landlord-badge" wx:if="{{isLandlord}}">
       <text>地</text>

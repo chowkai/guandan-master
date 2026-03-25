@@ -8,15 +8,15 @@
       wx:key="index"
       style="{{getRowStyle()}}"
     >
-      <!-- 每行的卡牌 -->
+      <!-- 每行的卡牌 - 修复 BUG-010: 添加 cardId 传递 -->
       <card
         wx:for="{{item}}"
-        wx:for-item="cardItem"
-        wx:key="id"
+        wx:key="*this"
         class="hand-card"
-        suit="{{cardItem.suit}}"
-        value="{{cardItem.value}}"
-        isSelected="{{isCardSelected(cardItem.suit, cardItem.value)}}"
+        data-card-id="{{item.suit}}-{{item.value}}"
+        suit="{{item.suit}}"
+        value="{{item.value}}"
+        isSelected="{{isCardSelected(item.suit, item.value)}}"
         isPlayable="{{canPlay}}"
         cardWidth="{{cardWidth}}"
         cardHeight="{{cardHeight}}"

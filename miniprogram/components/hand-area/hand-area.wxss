@@ -8,7 +8,6 @@
   background: rgba(26, 71, 42, 0.3);
   border-radius: var(--radius-lg);
   min-height: 600rpx;
-  z-index: 100;
 }
 
 /* 网格容器 */
@@ -16,36 +15,22 @@
   display: flex;
   flex-direction: column;
   gap: 20rpx;
-  position: relative;
-  z-index: 101;
 }
 
-/* 每一行 */
+/* 每一行 - 修复 BUG-009: 牌间距从 10px 调整为 16px */
 .hand-row {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
+  gap: 16px; /* 原 10px → 改为 16px，确保手指触摸不误触 */
   min-height: 110rpx;
-  position: relative;
-  z-index: 102;
 }
 
-/* 手牌 - 关键：确保卡牌可见且可点击 */
+/* 手牌 */
 .hand-card {
   flex-shrink: 0;
   transition: transform 0.2s ease;
-  position: relative;
-  z-index: 103;
-  pointer-events: auto;
-}
-
-/* 强制卡牌容器可见 */
-.hand-card .card-container {
-  position: relative !important;
-  z-index: 104 !important;
-  pointer-events: auto !important;
 }
 
 /* 选中效果增强 */
@@ -104,14 +89,25 @@
   animation: cardDealIn 0.3s ease forwards;
 }
 
-/* 响应式调整 */
+/* 响应式调整 - 修复 BUG-009: 小屏设备最小间距 12px */
 @media (max-width: 750rpx) {
   .hand-row {
-    gap: 6px;
+    gap: 12px; /* 小屏设备最小 12px，原 6px */
   }
   
   .hand-card {
     transform: scale(0.9);
+  }
+}
+
+/* 超小屏设备（iPhone SE 等） - 修复 BUG-009 */
+@media (max-width: 375px) {
+  .hand-row {
+    gap: 12px; /* 最小 12px */
+  }
+  
+  .hand-card {
+    transform: scale(0.85);
   }
 }
 

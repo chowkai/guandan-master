@@ -6,6 +6,36 @@
   background: linear-gradient(180deg, var(--deep-green) 0%, #0d2b1a 100%);
   position: relative;
   overflow: hidden;
+  padding-top: 100rpx; /* 为信息提示区留空间 - 修复 BUG-011 */
+}
+
+/* 信息提示区 - 修复 BUG-011 */
+.info-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: background 0.3s ease;
+}
+
+.info-bar.highlight {
+  background: rgba(255, 215, 0, 0.8);
+}
+
+.info-text {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.info-bar.highlight .info-text {
+  color: #000;
 }
 
 /* 牌桌背景 */

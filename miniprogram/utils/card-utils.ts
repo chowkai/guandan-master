@@ -221,3 +221,79 @@ export function compareCards(
   
   return (suitOrder[b.suit] || 0) - (suitOrder[a.suit] || 0);
 }
+
+/**
+ * 统计手牌中各点数的数量
+ */
+export function countCardsByValue(
+  cards: Array<{ suit: string; value: string }>
+): Map<string, number> {
+  const countMap = new Map<string, number>();
+  
+  for (const card of cards) {
+    const count = countMap.get(card.value) || 0;
+    countMap.set(card.value, count + 1);
+  }
+  
+  return countMap;
+}
+
+/**
+ * 花色转换（英文转中文）
+ */
+export function suitToChinese(suit: string): string {
+  const suitMap: Record<string, string> = {
+    spades: '黑桃',
+    hearts: '红心',
+    diamonds: '方块',
+    clubs: '梅花',
+    joker: '王'
+  };
+  return suitMap[suit] || suit;
+}
+
+/**
+ * 牌面转换（数字转中文）
+ */
+export function valueToChinese(value: number): string {
+  if (value === 15) return '小王';
+  if (value === 16) return '大王';
+  if (value === 11) return 'J';
+  if (value === 12) return 'Q';
+  if (value === 13) return 'K';
+  if (value === 14) return 'A';
+  return value.toString();
+}
+
+/**
+ * 计算牌力
+ * @param cards 手牌
+ * @returns 牌力分数 0-100
+ */
+export function calculateHandStrength(cards: Array<{ suit: string; value: string }>): number {
+  let score = 0;
+  const countMap = countCardsByValue(cards);
+  
+  // 炸弹加分
+  for (const count of countMap.values()) {
+    if (count >= 8) score += 40;
+    else if (count >= 4) score += 20;
+    else if (count === 3) score += 5;
+    else if (count === 2) score += 2;
+  }
+  
+  // 大牌加分
+  for (const [value, count] of countMap.entries()) {
+    const order = CARD_ORDER[value] || 0;
+    if (order >= 13) {
+      score += count * 3;
+    }
+  }
+  
+  // 王牌加分
+  const jokerCount = (CARD_ORDER['BJ'] ? (countMap.get('BJ') || 0) : 0) + 
+                     (CARD_ORDER['RJ'] ? (countMap.get('RJ') || 0) : 0);
+  score += jokerCount * 10;
+  
+  return Math.min(100, score);
+}

@@ -1,21 +1,8 @@
 <!-- 游戏页面模板 -->
 <view class="game-container">
-  <!-- 调试信息 + 当前玩家提示 -->
-  <view style="position: fixed; top: 20rpx; right: 20rpx; background: rgba(0,0,0,0.8); color: #0f0; padding: 10rpx 20rpx; z-index: 9999; font-size: 24rpx; border-radius: 8rpx;">
-    <text>手牌：{{myCards.length}}张</text>
-    <text style="margin-left: 20rpx;">玩家：{{players.length}}人</text>
-  </view>
-  
-  <!-- 当前玩家提示 -->
-  <view style="position: fixed; top: 20rpx; left: 50%; transform: translateX(-50%); background: {{currentPlayer === 0 ? 'rgba(52,199,89,0.9)' : 'rgba(0,0,0,0.8)'}}; color: white; padding: 10rpx 30rpx; z-index: 9999; font-size: 28rpx; border-radius: 8rpx; font-weight: bold;">
-    <text wx:if="{{currentPlayer === 0}}">⏰ 你的回合</text>
-    <text wx:else>⏳ 等待其他玩家...</text>
-  </view>
-  
-  <!-- 首发提示 -->
-  <view wx:if="{{gameStatus === 'starting'}}"
-        style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: #ffc107; padding: 40rpx 60rpx; z-index: 10000; font-size: 40rpx; border-radius: 16rpx; text-align: center; animation: pulse 1s infinite;">
-    <text>第{{firstPlayer + 1}}家首发</text>
+  <!-- 信息提示区 - 修复 BUG-011 -->
+  <view class="info-bar {{isFirstTurn ? 'highlight' : ''}}">
+    <text class="info-text">{{infoText}}</text>
   </view>
   
   <!-- 牌桌背景 -->
@@ -23,104 +10,121 @@
   
   <!-- 顶部玩家 (对家) -->
   <view class="player-top-area">
-    <view wx:for="{{players}}" wx:key="playerId" wx:if="{{item.position === 'top'}}"
-          class="player-simple" style="background: rgba(255,255,255,0.2); padding: 10rpx; border-radius: 8rpx; margin: 10rpx;">
-      <text style="color: white;">{{item.playerName}} - {{item.cardCount}}张</text>
-    </view>
+    <player
+      wx:for="{{players}}"
+      wx:if="{{item.position === 'top'}}"
+      wx:key="playerId"
+      player-id="{{item.playerId}}"
+      player-name="{{item.playerName}}"
+      avatar-url="{{item.avatarUrl}}"
+      card-count="{{item.cardCount}}"
+      is-self="{{item.isSelf}}"
+      is-landlord="{{item.isLandlord}}"
+      position="{{item.position}}"
+    />
   </view>
   
   <!-- 左侧玩家 (上家) -->
   <view class="player-left-area">
-    <view wx:for="{{players}}" wx:key="playerId" wx:if="{{item.position === 'left'}}"
-          class="player-simple" style="background: rgba(255,255,255,0.2); padding: 10rpx; border-radius: 8rpx; margin: 10rpx;">
-      <text style="color: white;">{{item.playerName}} - {{item.cardCount}}张</text>
-    </view>
+    <player
+      wx:for="{{players}}"
+      wx:if="{{item.position === 'left'}}"
+      wx:key="playerId"
+      player-id="{{item.playerId}}"
+      player-name="{{item.playerName}}"
+      avatar-url="{{item.avatarUrl}}"
+      card-count="{{item.cardCount}}"
+      is-self="{{item.isSelf}}"
+      is-landlord="{{item.isLandlord}}"
+      position="{{item.position}}"
+    />
   </view>
   
   <!-- 右侧玩家 (下家) -->
   <view class="player-right-area">
-    <view wx:for="{{players}}" wx:key="playerId" wx:if="{{item.position === 'right'}}"
-          class="player-simple" style="background: rgba(255,255,255,0.2); padding: 10rpx; border-radius: 8rpx; margin: 10rpx;">
-      <text style="color: white;">{{item.playerName}} - {{item.cardCount}}张</text>
-    </view>
+    <player
+      wx:for="{{players}}"
+      wx:if="{{item.position === 'right'}}"
+      wx:key="playerId"
+      player-id="{{item.playerId}}"
+      player-name="{{item.playerName}}"
+      avatar-url="{{item.avatarUrl}}"
+      card-count="{{item.cardCount}}"
+      is-self="{{item.isSelf}}"
+      is-landlord="{{item.isLandlord}}"
+      position="{{item.position}}"
+    />
   </view>
   
   <!-- 中央出牌区 -->
-  <view class="center-area" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600rpx; text-align: center;">
-    <text style="color: rgba(255,255,255,0.5); font-size: 32rpx;">出牌区</text>
+  <view class="center-area">
+    <play-area
+      play-history="{{playHistory}}"
+      current-play="{{currentPlay}}"
+      is-expanded="{{false}}"
+      bind:expandchange="onExpandChange"
+    />
   </view>
   
   <!-- 底部手牌区 -->
-  <view class="bottom-area" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(26, 71, 42, 0.9); padding: 20rpx; border-top: 2rpx solid rgba(255,255,255,0.1);">
-    
+  <view class="bottom-area">
     <!-- 手牌 -->
-    <view class="hand-section" style="min-height: 400rpx; background: rgba(255,0,0,0.1); border: 2rpx solid red; padding: 20rpx; margin-bottom: 20rpx;">
-      <text style="color: yellow; font-size: 28rpx; display: block; margin-bottom: 20rpx;">我的手牌 (点击选牌):</text>
-      
-      <!-- 卡牌容器 - 手牌扇形排列 (从左到右，左压右) -->
-      <view style="display: flex; justify-content: center; position: relative; height: 320rpx; margin-top: 20rpx; overflow: hidden;">
-        <view wx:for="{{myCards}}" wx:key="id" wx:for-item="card"
-              class="card-container {{selectedCards[card.id] ? 'selected' : ''}}"
-              style="width: 96px; height: 134px; background: white; border-radius: 12rpx; position: absolute; left: 50%; bottom: 0; cursor: pointer; transition: all 0.2s; {{selectedCards[card.id] ? 'transform: translateY(-40rpx); box-shadow: 0 -8rpx 16rpx rgba(0,0,0,0.3); z-index: 100;' : ''}}; margin-left: {{(index - myCards.length / 2) * 8}}px; z-index: {{index}};"
-              bindtap="onCardTap" data-card-id="{{card.id}}">
-          
-          <!-- 卡牌内容 -->
-          <view style="position: relative; width: 100%; height: 100%; border: 1rpx solid #e0e0e0; border-radius: 12rpx; overflow: hidden; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);">
-            <!-- 左上角：字 + 花 -->
-            <view style="position: absolute; top: 8rpx; left: 8rpx; display: flex; flex-direction: column; align-items: center; line-height: 1;">
-              <text style="font-size: 32rpx; font-weight: bold; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}};">{{card.value}}</text>
-              <text style="font-size: 32rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}}; line-height: 1;">{{getSuitSymbol(card.suit)}}</text>
-            </view>
-            
-            <!-- 中间：大花色 -->
-            <view style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-              <text style="font-size: 96rpx; color: {{card.suit === 'heart' || card.suit === 'diamond' ? '#d32f2f' : '#212121'}}; line-height: 1;">{{getSuitSymbol(card.suit)}}</text>
-            </view>
-            
-            <!-- 王牌特殊显示 -->
-            <view wx:if="{{card.suit === 'joker'}}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-              <text style="font-size: 40rpx; font-weight: bold; color: {{card.value === 'RJ' ? '#d32f2f' : '#212121'}};">{{card.value === 'BJ' ? '小王' : '大王'}}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-      
-      <!-- 选牌提示 -->
-      <view style="margin-top: 20rpx; text-align: center;">
-        <text style="color: white; font-size: 28rpx;">已选：{{selectedCount}} 张</text>
-      </view>
+    <view class="hand-section">
+      <hand-area
+        cards="{{myCards}}"
+        selected-cards="{{selectedCards}}"
+        can-play="{{canPlay}}"
+        bind:cardselect="onCardSelect"
+      />
     </view>
     
     <!-- 操作按钮区 -->
-    <view class="action-section" style="display: flex; justify-content: center; gap: 20rpx; padding: 20rpx; background: rgba(0,0,0,0.3);">
-      <button class="action-btn pass-btn" bindtap="onPass" disabled="{{!canPlay}}"
-              style="min-width: 160rpx; height: 88rpx; border-radius: 16rpx; font-size: 32rpx; font-weight: bold; background: rgba(255,255,255,0.2); color: white; border: 2rpx solid rgba(255,255,255,0.3);">
-        不出
-      </button>
-      
-      <button class="action-btn hint-btn" bindtap="onHint"
-              style="min-width: 160rpx; height: 88rpx; border-radius: 16rpx; font-size: 32rpx; font-weight: bold; background: rgba(255,193,7,0.2); color: #ffc107; border: 2rpx solid #ffc107;">
-        提示
-      </button>
-      
-      <button class="action-btn play-btn" bindtap="onPlayCards" disabled="{{!canPlay || Object.keys(selectedCards).length === 0}}"
-              style="min-width: 160rpx; height: 88rpx; border-radius: 16rpx; font-size: 32rpx; font-weight: bold; background: linear-gradient(135deg, #34c759 0%, #2db84f 100%); color: white; box-shadow: 0 4rpx 16rpx rgba(52,199,89,0.4);">
-        出牌 ({{Object.keys(selectedCards).length}})
-      </button>
+    <view class="action-section">
+      <view class="action-buttons">
+        <button 
+          class="action-btn pass-btn" 
+          bindtap="onPass"
+          disabled="{{!canPlay}}"
+        >
+          不出
+        </button>
+        
+        <button 
+          class="action-btn hint-btn" 
+          bindtap="onHint"
+        >
+          提示
+        </button>
+        
+        <button 
+          class="action-btn play-btn" 
+          bindtap="onPlayCards"
+          disabled="{{!canPlay || selectedCards.length === 0}}"
+        >
+          出牌 ({{selectedCards.length}})
+        </button>
+      </view>
     </view>
     
     <!-- 底部玩家 (自己) -->
-    <view class="player-bottom-area" style="position: absolute; bottom: 20rpx; right: 40rpx;">
-      <view wx:for="{{players}}" wx:key="playerId" wx:if="{{item.position === 'bottom'}}"
-            style="background: rgba(255,255,255,0.2); padding: 10rpx 20rpx; border-radius: 8rpx;">
-        <text style="color: white;">{{item.playerName}}</text>
-      </view>
+    <view class="player-bottom-area">
+      <player
+        wx:for="{{players}}"
+        wx:if="{{item.position === 'bottom'}}"
+        wx:key="playerId"
+        player-id="{{item.playerId}}"
+        player-name="{{item.playerName}}"
+        avatar-url="{{item.avatarUrl}}"
+        card-count="{{item.cardCount}}"
+        is-self="{{item.isSelf}}"
+        is-landlord="{{item.isLandlord}}"
+        position="{{item.position}}"
+      />
     </view>
   </view>
   
   <!-- 游戏状态提示 -->
-  <view wx:if="{{gameStatus === 'waiting'}}"
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40rpx; background: rgba(0,0,0,0.8); border-radius: 16rpx; z-index: 100;">
-    <text style="font-size: 36rpx; color: white;">等待游戏开始...</text>
+  <view class="game-status-toast" wx:if="{{gameStatus === 'waiting'}}">
+    <text>等待游戏开始...</text>
   </view>
 </view>

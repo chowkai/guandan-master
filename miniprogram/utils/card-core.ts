@@ -3,7 +3,7 @@
  * 包含：数据结构、发牌算法、排序功能
  */
 
-import { Suit, CardValue, CARD_ORDER } from './card-utils';
+
 
 /**
  * 卡牌接口

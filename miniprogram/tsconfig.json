@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2015",
     "module": "ESNext",
     "moduleResolution": "Node",
-    "strict": false,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": false,
-    "sourceMap": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "rootDir": "./",
-    "outDir": "./",
+    "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
@@ -20,15 +19,16 @@
       "@utils/*": ["utils/*"],
       "@styles/*": ["styles/*"]
     },
-    "lib": ["ES2020"],
+    "lib": ["ES2015"],
     "types": ["miniprogram-api-typings"],
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "strictFunctionTypes": false,
-    
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
   },
   "include": [
     "./**/*.ts",
@@ -37,10 +37,5 @@
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  }
+  ]
 }

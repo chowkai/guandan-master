@@ -3,8 +3,7 @@
  * 识别和比较掼蛋的 11 种牌型
  */
 
-import { Card } from './card-core';
-import { countCardsByValue } from './card-utils';
+import { Card, countCardsByValue } from './card-core';
 
 /**
  * 牌型枚举
@@ -14,13 +13,15 @@ export enum CardType {
   PAIR = 'pair',  // 对子
   TRIPLE = 'triple',  // 三张
   TRIPLE_WITH_PAIR = 'triple_with_pair',  // 三带二
+  TRIPLE_WITH_SINGLE = 'triple_with_single',  // 三带一
   STRAIGHT = 'straight',  // 顺子（5 张连续）
   CONSECUTIVE_PAIRS = 'consecutive_pairs',  // 连对（3 对连续）
   STEEL_PLATE = 'steel_plate',  // 钢板（2 个连续三张）
-  BOMB = 'bomb',  // 炸弹（4 张相同）
+  AIRPLANE = 'airplane',  // 飞机（2+ 连续三张，可带牌）
+  BOMB = 'bomb',  // 炸弹（4-5 张相同）
   SAME_COLOR_STRAIGHT_FLUSH = 'same_color_straight_flush',  // 同花顺
   FOUR_KINGS = 'four_kings',  // 四大天王（4 张王）
-  NUCLEAR_BOMB = 'nuclear_bomb'  // 核弹（8 张相同）
+  NUCLEAR_BOMB = 'nuclear_bomb'  // 核弹（6 张及以上相同）
 }
 
 /**
@@ -35,17 +36,19 @@ export interface HandType {
 
 /**
  * 牌型优先级（用于比较大小）
- * 核弹 > 四大天王 > 同花顺 > 炸弹 > 其他
+ * 核弹 (6 张+) > 四大天王 > 同花顺 > 炸弹 (4-5 张) > 飞机/钢板 > 其他
  */
 const TYPE_PRIORITY: Record<CardType, number> = {
-  [CardType.NUCLEAR_BOMB]: 11,
-  [CardType.FOUR_KINGS]: 10,
-  [CardType.SAME_COLOR_STRAIGHT_FLUSH]: 9,
-  [CardType.BOMB]: 8,
-  [CardType.STEEL_PLATE]: 7,
+  [CardType.NUCLEAR_BOMB]: 12,
+  [CardType.FOUR_KINGS]: 11,
+  [CardType.SAME_COLOR_STRAIGHT_FLUSH]: 10,
+  [CardType.BOMB]: 9,
+  [CardType.AIRPLANE]: 8,  // 飞机与钢板同优先级
+  [CardType.STEEL_PLATE]: 8,
   [CardType.CONSECUTIVE_PAIRS]: 6,
   [CardType.STRAIGHT]: 5,
   [CardType.TRIPLE_WITH_PAIR]: 4,
+  [CardType.TRIPLE_WITH_SINGLE]: 4,
   [CardType.TRIPLE]: 3,
   [CardType.PAIR]: 2,
   [CardType.SINGLE]: 1
@@ -63,20 +66,17 @@ export function identifyHandType(cards: Card[]): HandType | null {
   
   // 按牌面值排序
   const sortedCards = [...cards].sort((a, b) => b.value - a.value);
+  const valueCount = countCardsByValue(sortedCards);
   
-  // 检查特殊牌型
-  // 1. 核弹（8 张相同）
-  if (sortedCards.length === 8) {
-    const valueCount = countCardsByValue(sortedCards);
-    if (valueCount.size === 1) {
-      const value = Array.from(valueCount.keys())[0];
-      return {
-        type: CardType.NUCLEAR_BOMB,
-        value: value,
-        cards: sortedCards,
-        length: 8
-      };
-    }
+  // 1. 核弹（6 张及以上相同）
+  if (sortedCards.length >= 6 && valueCount.size === 1) {
+    const value = Array.from(valueCount.keys())[0];
+    return {
+      type: CardType.NUCLEAR_BOMB,
+      value: value,
+      cards: sortedCards,
+      length: sortedCards.length
+    };
   }
   
   // 2. 四大天王（4 张王）
@@ -95,21 +95,18 @@ export function identifyHandType(cards: Card[]): HandType | null {
     return sameColorStraight;
   }
   
-  // 4. 炸弹（4 张相同）
-  if (sortedCards.length === 4) {
-    const valueCount = countCardsByValue(sortedCards);
-    if (valueCount.size === 1) {
-      const value = Array.from(valueCount.keys())[0];
-      return {
-        type: CardType.BOMB,
-        value: value,
-        cards: sortedCards,
-        length: 4
-      };
-    }
+  // 4. 炸弹（4-5 张相同）
+  if (sortedCards.length >= 4 && sortedCards.length <= 5 && valueCount.size === 1) {
+    const value = Array.from(valueCount.keys())[0];
+    return {
+      type: CardType.BOMB,
+      value: value,
+      cards: sortedCards,
+      length: sortedCards.length
+    };
   }
   
-  // 5. 钢板（2 个连续三张）
+  // 5. 钢板（2 个连续三张，6 张）- 优先于飞机检测
   if (sortedCards.length === 6) {
     const steelPlate = checkSteelPlate(sortedCards);
     if (steelPlate) {
@@ -117,7 +114,13 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 6. 连对（3 对连续）
+  // 6. 飞机（2+ 连续三张，可带牌）
+  const airplane = checkAirplane(sortedCards);
+  if (airplane) {
+    return airplane;
+  }
+  
+  // 7. 连对（3 对连续）
   if (sortedCards.length >= 6 && sortedCards.length % 2 === 0) {
     const consecutivePairs = checkConsecutivePairs(sortedCards);
     if (consecutivePairs) {
@@ -125,7 +128,7 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 7. 顺子（5 张连续）
+  // 8. 顺子（5 张连续）
   if (sortedCards.length >= 5) {
     const straight = checkStraight(sortedCards);
     if (straight) {
@@ -133,7 +136,7 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 8. 三带二
+  // 9. 三带二 / 三带一
   if (sortedCards.length === 5) {
     const tripleWithPair = checkTripleWithPair(sortedCards);
     if (tripleWithPair) {
@@ -141,9 +144,16 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 9. 三张
+  // 三带一（4 张牌）
+  if (sortedCards.length === 4) {
+    const tripleWithSingle = checkTripleWithSingle(sortedCards);
+    if (tripleWithSingle) {
+      return tripleWithSingle;
+    }
+  }
+  
+  // 10. 三张
   if (sortedCards.length === 3) {
-    const valueCount = countCardsByValue(sortedCards);
     if (valueCount.size === 1) {
       const value = Array.from(valueCount.keys())[0];
       return {
@@ -155,7 +165,7 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 10. 对子
+  // 11. 对子
   if (sortedCards.length === 2) {
     if (sortedCards[0].value === sortedCards[1].value) {
       return {
@@ -167,7 +177,7 @@ export function identifyHandType(cards: Card[]): HandType | null {
     }
   }
   
-  // 11. 单张
+  // 12. 单张
   if (sortedCards.length === 1) {
     return {
       type: CardType.SINGLE,
@@ -329,6 +339,112 @@ function checkTripleWithPair(cards: Card[]): HandType | null {
 }
 
 /**
+ * 检查三带一
+ */
+function checkTripleWithSingle(cards: Card[]): HandType | null {
+  const valueCount = countCardsByValue(cards);
+  
+  if (valueCount.size !== 2) {
+    return null;
+  }
+  
+  const values = Array.from(valueCount.keys());
+  const tripleValue = values.find(v => valueCount.get(v) === 3);
+  const singleValue = values.find(v => valueCount.get(v) === 1);
+  
+  if (tripleValue !== undefined && singleValue !== undefined) {
+    return {
+      type: CardType.TRIPLE_WITH_SINGLE,
+      value: tripleValue,  // 三张的值决定大小
+      cards: cards,
+      length: 4
+    };
+  }
+  
+  return null;
+}
+
+/**
+ * 检查飞机（2+ 连续三张，可带对子或单张）
+ */
+function checkAirplane(cards: Card[]): HandType | null {
+  const valueCount = countCardsByValue(cards);
+  
+  // 找出所有有三张的值
+  const tripleValues = Array.from(valueCount.entries())
+    .filter(([_, count]) => count >= 3)
+    .map(([value, _]) => value)
+    .sort((a, b) => b - a);
+  
+  if (tripleValues.length < 2) {
+    return null;  // 至少需要 2 个连续三张
+  }
+  
+  // 找连续的三张序列
+  for (let i = 0; i <= tripleValues.length - 2; i++) {
+    const sequence: number[] = [tripleValues[i]];
+    
+    for (let j = i + 1; j < tripleValues.length; j++) {
+      if (tripleValues[j - 1] - tripleValues[j] === 1) {
+        sequence.push(tripleValues[j]);
+      } else {
+        break;
+      }
+    }
+    
+    if (sequence.length >= 2) {
+      // 计算需要的带牌数量
+      const tripleCount = sequence.length;
+      const cardsNeeded = tripleCount * 3;
+      const extraCards = cards.length - cardsNeeded;
+      
+      // 带牌数量必须是 tripleCount 的倍数（带对子或单张）
+      if (extraCards < 0) continue;
+      
+      // 验证带牌
+      const extraCardsList = cards.filter(c => !sequence.includes(c.value));
+      
+      // 如果可以带对子
+      if (extraCards === tripleCount * 2) {
+        // 检查是否能组成对子
+        const extraValueCount = countCardsByValue(extraCardsList);
+        const canFormPairs = Array.from(extraValueCount.values()).every(c => c === 2);
+        if (canFormPairs) {
+          return {
+            type: CardType.AIRPLANE,
+            value: sequence[0],  // 最大的值
+            cards: cards,
+            length: cards.length
+          };
+        }
+      }
+      
+      // 如果可以带单张
+      if (extraCards === tripleCount) {
+        return {
+          type: CardType.AIRPLANE,
+          value: sequence[0],
+          cards: cards,
+          length: cards.length
+        };
+      }
+      
+      // 如果不带牌
+      if (extraCards === 0) {
+        return {
+          type: CardType.AIRPLANE,
+          value: sequence[0],
+          cards: cards,
+          length: cards.length
+        };
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
  * 比较两个牌型的大小
  * @param hand1 手牌 1
  * @param hand2 手牌 2
@@ -365,9 +481,11 @@ export function getHandTypeName(type: CardType): string {
     [CardType.PAIR]: '对子',
     [CardType.TRIPLE]: '三张',
     [CardType.TRIPLE_WITH_PAIR]: '三带二',
+    [CardType.TRIPLE_WITH_SINGLE]: '三带一',
     [CardType.STRAIGHT]: '顺子',
     [CardType.CONSECUTIVE_PAIRS]: '连对',
     [CardType.STEEL_PLATE]: '钢板',
+    [CardType.AIRPLANE]: '飞机',
     [CardType.BOMB]: '炸弹',
     [CardType.SAME_COLOR_STRAIGHT_FLUSH]: '同花顺',
     [CardType.FOUR_KINGS]: '四大天王',
@@ -380,12 +498,13 @@ export function getHandTypeName(type: CardType): string {
  * 检查是否为炸弹类牌型（包括核弹、四大天王、同花顺、普通炸弹）
  */
 export function isBombType(type: CardType): boolean {
-  return [
+  const bombTypes = [
     CardType.NUCLEAR_BOMB,
     CardType.FOUR_KINGS,
     CardType.SAME_COLOR_STRAIGHT_FLUSH,
     CardType.BOMB
-  ].includes(type);
+  ];
+  return bombTypes.indexOf(type) >= 0;
 }
 
 /**
@@ -397,13 +516,15 @@ export function getHandTypeLength(type: CardType): number | null {
     [CardType.PAIR]: 2,
     [CardType.TRIPLE]: 3,
     [CardType.TRIPLE_WITH_PAIR]: 5,
+    [CardType.TRIPLE_WITH_SINGLE]: 4,
     [CardType.STRAIGHT]: 5,  // 最少 5 张
     [CardType.CONSECUTIVE_PAIRS]: 6,  // 最少 6 张（3 对）
     [CardType.STEEL_PLATE]: 6,
-    [CardType.BOMB]: 4,
+    [CardType.AIRPLANE]: 6,  // 最少 6 张（2 个三张）
+    [CardType.BOMB]: 4,  // 最少 4 张
     [CardType.SAME_COLOR_STRAIGHT_FLUSH]: 5,  // 最少 5 张
     [CardType.FOUR_KINGS]: 4,
-    [CardType.NUCLEAR_BOMB]: 8
+    [CardType.NUCLEAR_BOMB]: 6  // 最少 6 张
   };
   return lengths[type];
 }
