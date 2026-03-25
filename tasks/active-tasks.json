@@ -1,4 +1,9 @@
 {
+  "meta": {
+    "created": "2026-03-23T07:02:00+08:00",
+    "lastUpdated": "2026-03-25T08:50:00+08:00",
+    "timezone": "Asia/Shanghai"
+  },
   "tasks": [
     {
       "id": "phase-3.7",
@@ -30,6 +35,87 @@
       "bugsFound": 8,
       "bugsFixed": 1,
       "bugsPending": 7
+    },
+    {
+      "id": "bugfix-009",
+      "name": "BUG-009: 卡牌间距太近（触摸不准确）",
+      "project": "掼蛋微信小程序",
+      "assignee": "dev-agent",
+      "status": "pending",
+      "priority": "P1",
+      "description": "卡牌间距约 8-10px，导致手指在手机上无法准确选择目标卡牌。需调整为≥16px。",
+      "estimatedMinutes": 30,
+      "startedAt": null,
+      "dueAt": "2026-03-25T12:00:00+08:00",
+      "completedAt": null,
+      "deliverables": [
+        "guandan-miniprogram/components/hand-area/hand-area.wxss（修改间距）",
+        "tasks/bug-report-009.md（修复验证记录）"
+      ],
+      "result": null,
+      "blockers": [],
+      "bugReport": "tasks/bug-report-009.md"
+    },
+    {
+      "id": "bugfix-010",
+      "name": "BUG-010: onCardTap 事件未定义",
+      "project": "掼蛋微信小程序",
+      "assignee": "dev-agent",
+      "status": "pending",
+      "priority": "P0",
+      "description": "选牌时控制台报错 onCardTap 方法未定义，导致卡牌无法选中。需添加事件处理方法。",
+      "estimatedMinutes": 20,
+      "startedAt": null,
+      "dueAt": "2026-03-25T10:00:00+08:00",
+      "completedAt": null,
+      "deliverables": [
+        "guandan-miniprogram/pages/game/game.ts（添加 onCardTap 方法）",
+        "guandan-miniprogram/components/card/card.wxml（绑定事件）",
+        "tasks/bug-report-010.md（修复验证记录）"
+      ],
+      "result": null,
+      "blockers": [],
+      "bugReport": "tasks/bug-report-010.md"
+    },
+    {
+      "id": "bugfix-011",
+      "name": "BUG-011: 缺少首发者提示信息",
+      "project": "掼蛋微信小程序",
+      "assignee": "dev-agent",
+      "status": "pending",
+      "priority": "P1",
+      "description": "游戏主画面没有信息提示区，无法看到当前该谁出牌、首发者是谁。需添加顶部信息提示区。",
+      "estimatedMinutes": 40,
+      "startedAt": null,
+      "dueAt": "2026-03-25T12:00:00+08:00",
+      "completedAt": null,
+      "deliverables": [
+        "guandan-miniprogram/pages/game/game.wxml（添加信息提示区）",
+        "guandan-miniprogram/pages/game/game.wxss（样式）",
+        "guandan-miniprogram/pages/game/game.ts（逻辑）",
+        "tasks/bug-report-011.md（修复验证记录）"
+      ],
+      "result": null,
+      "blockers": [],
+      "bugReport": "tasks/bug-report-011.md"
+    },
+    {
+      "id": "process-improvement",
+      "name": "流程改进文档 v2.0",
+      "project": "项目管理",
+      "assignee": "main",
+      "status": "completed",
+      "priority": "P2",
+      "description": "针对 Phase 3 出现的 4 个重复性问题，完善全流程管理规范，确保每个阶段有量化验收标准、信息留存和验证闭环。",
+      "estimatedMinutes": 60,
+      "startedAt": "2026-03-25T08:45:00+08:00",
+      "dueAt": "2026-03-25T10:00:00+08:00",
+      "completedAt": "2026-03-25T08:50:00+08:00",
+      "deliverables": [
+        "docs/process/full-process-spec-v2.md"
+      ],
+      "result": "流程文档 v2.0 已完成，包含 5 个阶段的详细规范、检查清单、模板和追溯机制",
+      "blockers": []
     }
   ]
 }
