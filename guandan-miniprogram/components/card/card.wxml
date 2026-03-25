@@ -1,7 +1,8 @@
-<!-- 卡牌组件模板 -->
+<!-- 卡牌组件模板 - 修复 BUG-010: 添加 data-card-id -->
 <view 
   class="card-container {{isSelected ? 'selected' : ''}} {{!isPlayable ? 'disabled' : ''}}"
   style="{{getCardStyle()}}"
+  data-card-id="{{suit}}-{{value}}"
   bindtap="onTap"
 >
   <!-- 卡牌背景 -->

@@ -12,6 +12,8 @@ interface IGameData {
   canPlay: boolean;
   gameStatus: string;
   currentPlayer: number;
+  infoText: string; // 信息提示 - 修复 BUG-011
+  isFirstTurn: boolean; // 是否首发 - 修复 BUG-011
 }
 
 Page<IGameData>({
@@ -24,7 +26,9 @@ Page<IGameData>({
     playHistory: [],
     canPlay: false,
     gameStatus: 'waiting',
-    currentPlayer: 0
+    currentPlayer: 0,
+    infoText: '', // 信息提示 - 修复 BUG-011
+    isFirstTurn: false // 是否首发 - 修复 BUG-011
   },
 
   onLoad(options) {
@@ -48,7 +52,7 @@ Page<IGameData>({
   },
 
   /**
-   * 初始化游戏
+   * 初始化游戏 - 修复 BUG-011
    */
   initGame() {
     // 初始化玩家
@@ -57,11 +61,22 @@ Page<IGameData>({
     // 初始化牌局
     this.dealCards();
     
+    // 随机指定首发玩家 - 修复 BUG-011
+    const firstPlayer = Math.floor(Math.random() * 4);
+    const firstPlayerName = firstPlayer === 0 ? '我' : `玩家${firstPlayer + 1}`;
+    
     // 设置游戏状态
     this.setData({
       gameStatus: 'playing',
-      currentPlayer: 0
+      currentPlayer: firstPlayer,
+      infoText: `${firstPlayerName} 首发`, // 首发提示
+      isFirstTurn: true // 高亮显示
     });
+    
+    // 3 秒后恢复正常显示
+    setTimeout(() => {
+      this.updateInfoText();
+    }, 3000);
   },
 
   /**
@@ -142,22 +157,67 @@ Page<IGameData>({
   },
 
   /**
-   * 处理选牌
+   * 处理选牌 - 修复 BUG-010
    */
   onCardSelect(event: WechatMiniprogram.CustomEvent) {
-    const { suit, value, isSelected } = event.detail;
+    const { cardId, suit, value, isSelected } = event.detail;
     const { selectedCards } = this.data;
     
-    let newSelectedCards;
+    // 使用 cardId 进行选择
     if (isSelected) {
-      newSelectedCards = [...selectedCards, { suit, value }];
+      // 选中：添加 cardId
+      if (selectedCards.length >= 5) {
+        wx.showToast({ title: '最多选 5 张牌', icon: 'none' });
+        return;
+      }
+      selectedCards.push(cardId);
+      console.log('选中卡牌:', cardId);
     } else {
-      newSelectedCards = selectedCards.filter(
-        card => !(card.suit === suit && card.value === value)
-      );
+      // 反选：移除 cardId
+      const index = selectedCards.indexOf(cardId);
+      if (index > -1) {
+        selectedCards.splice(index, 1);
+        console.log('反选卡牌:', cardId);
+      }
     }
     
-    this.setData({ selectedCards: newSelectedCards });
+    this.setData({ selectedCards });
+  },
+
+  /**
+   * 卡牌点击事件处理 - 修复 BUG-010
+   */
+  onCardTap(event: WechatMiniprogram.TouchEvent) {
+    const { cardId } = event.currentTarget.dataset;
+    if (!cardId) return;
+    
+    this.toggleCardSelection(cardId);
+  },
+
+  /**
+   * 切换卡牌选中状态 - 修复 BUG-010
+   * 选中：向上移动 12px
+   * 反选：恢复原位
+   */
+  toggleCardSelection(cardId: string) {
+    const { selectedCards, myCards } = this.data;
+    const index = selectedCards.indexOf(cardId);
+    
+    if (index > -1) {
+      // 反选：移除
+      selectedCards.splice(index, 1);
+      console.log('反选卡牌:', cardId);
+    } else {
+      // 选中：添加（最多 5 张）
+      if (selectedCards.length >= 5) {
+        wx.showToast({ title: '最多选 5 张牌', icon: 'none' });
+        return;
+      }
+      selectedCards.push(cardId);
+      console.log('选中卡牌:', cardId);
+    }
+    
+    this.setData({ selectedCards });
   },
 
   /**
@@ -258,5 +318,20 @@ Page<IGameData>({
     const { currentPlayer } = this.data;
     const next = (currentPlayer + 1) % 4;
     this.setData({ currentPlayer: next });
+    this.updateInfoText();
+  },
+
+  /**
+   * 更新信息提示 - 修复 BUG-011
+   */
+  updateInfoText() {
+    const { currentPlayer } = this.data;
+    const playerNames = ['我', '玩家 2', '玩家 3', '玩家 4'];
+    const playerName = playerNames[currentPlayer] || `玩家${currentPlayer + 1}`;
+    
+    this.setData({
+      infoText: `当前出牌：${playerName}`,
+      isFirstTurn: false
+    });
   }
 });

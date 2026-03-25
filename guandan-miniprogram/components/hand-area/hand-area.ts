@@ -97,15 +97,16 @@ Component<IHandAreaData>({
     },
 
     /**
-     * 处理卡牌点击
+     * 处理卡牌点击 - 修复 BUG-010
      */
     onCardTap(event: WechatMiniprogram.CustomEvent) {
       if (!this.data.canPlay) return;
       
-      const { suit, value, isSelected } = event.detail;
+      const { cardId, suit, value, isSelected } = event.detail;
       
-      // 触发选牌事件
+      // 触发选牌事件 - 传递 cardId
       this.triggerEvent('cardselect', {
+        cardId,
         suit,
         value,
         isSelected
