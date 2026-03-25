@@ -158,5 +158,23 @@ Page({
 ---
 
 **创建时间**: 2026-03-25  
-**修复人**: -  
-**预计完成**: 2026-03-25
+**修复人**: dev-agent  
+**预计完成**: 2026-03-25  
+**实际完成**: 2026-03-25 09:15  
+**状态**: ✅ 已修复，待用户验证
+
+---
+
+## 修复记录
+
+**修复时间**: 2026-03-25 09:15  
+**提交**: fd07beb
+
+**修改内容**:
+- `pages/game/game.ts`: 添加 onCardTap/toggleCardSelection 方法
+- `pages/game/game.wxml`: 添加信息提示区
+- `pages/game/game.wxss`: 添加信息提示区样式
+- `components/card/card.wxml`: 添加 data-card-id
+- `components/card/card.ts`: 传递 cardId 到事件
+- `components/hand-area/hand-area.wxml`: 添加 data-card-id
+- `components/hand-area/hand-area.ts`: 传递 cardId 到父组件
