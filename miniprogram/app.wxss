@@ -1,5 +1,0 @@
-/**
- * 小程序全局样式入口
- */
-@import './styles/variables.wxss';
-@import './styles/global.wxss';

@@ -1,9 +1,0 @@
-{
-  "usingComponents": {
-    "player": "/components/player/player",
-    "hand-area": "/components/hand-area/hand-area",
-    "play-area": "/components/play-area/play-area"
-  },
-  "navigationBarTitleText": "游戏进行中",
-  "navigationStyle": "custom"
-}
